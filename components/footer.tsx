@@ -12,14 +12,13 @@ function Footer() {
         className={`${styles.footer__container} ${styles.container} ${styles.grid}`}
       >
         <img src="/block-19.svg" alt="image" className={styles.footer__img1} />
-        <img src="/block-14.svg" alt="image" className={styles.footer__img2} />
+        <img src="/block-9.svg" alt="image" className={styles.footer__img2} />
         <div className={`${styles.footer__content} ${styles.grid}`}>
           <ul className={styles.footer__links}>
             {[
-              { href: "/", label: "HOME" },
               { href: "/#travel", label: "HOW IT WORKS" },
               { href: "/free-tokens", label: "FREE TOKENS" },
-              { href: "/rules", label: "RULES" },
+              { href: "/rules", label: "OUR RULES" },
             ].map((item) => (
               <li key={item.href}>
                 <a

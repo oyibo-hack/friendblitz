@@ -56,7 +56,7 @@ function Popup({ routes }: { routes: string[] }) {
   const [currentMessage, setCurrentMessage] = useState<PopupMessage | null>(
     null
   );
-  const POPUP_DELAY = 72000; // 72 seconds
+  const POPUP_DELAY = 92000; // 92 seconds
 
   const getRandomMessage = useCallback((): PopupMessage => {
     const randomIndex = Math.floor(Math.random() * popupMessages.length);
@@ -68,7 +68,7 @@ function Popup({ routes }: { routes: string[] }) {
     const initialDelay = setTimeout(() => {
       setCurrentMessage(getRandomMessage());
       setIsPopupVisible(true);
-    }, 20000); // 20 seconds
+    }, 30000); // 30 seconds
 
     return () => clearTimeout(initialDelay);
   }, [getRandomMessage]);
@@ -125,6 +125,7 @@ function Popup({ routes }: { routes: string[] }) {
           <a
             href="/profile#share"
             className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
+            onClick={() => setIsPopupVisible(false)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

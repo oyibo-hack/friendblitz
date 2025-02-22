@@ -195,7 +195,7 @@ function YourTokens() {
               <div className={`${styles.block__content} ${styles.grid}`}>
                 <article className={styles.block__card}>
                   <img
-                    src="/block-17.svg"
+                    src="/block-4.svg"
                     alt="image"
                     className={styles.block__img}
                   />
@@ -239,7 +239,7 @@ function YourTokens() {
                 </article>
                 <article className={styles.block__card}>
                   <img
-                    src="/block-17.svg"
+                    src="/block-4.svg"
                     alt="image"
                     className={styles.block__img}
                   />
@@ -283,7 +283,7 @@ function YourTokens() {
                 </article>
                 <article className={styles.block__card}>
                   <img
-                    src="/block-17.svg"
+                    src="/block-4.svg"
                     alt="image"
                     className={styles.block__img}
                   />

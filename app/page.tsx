@@ -30,13 +30,13 @@ export default function Page() {
               </a>
 
               <img
-                src="/block-10.svg"
+                src="/block-9.svg"
                 alt="image"
                 className={styles.home__image}
               />
             </div>
 
-            <img src="/block-2.svg" alt="image" className={styles.home__img} />
+            <img src="/home-img.png" alt="image" className={styles.home__img} />
           </div>
         </section>
         {/*==================== BLOCK ====================*/}
@@ -79,7 +79,7 @@ export default function Page() {
                 </article>
                 <article className={`${styles.block__card} swiper-slide`}>
                   <img
-                    src="/block-4.svg"
+                    src="/block-2.svg"
                     alt="image"
                     className={styles.block__img}
                   />
@@ -92,7 +92,7 @@ export default function Page() {
                 </article>
                 <article className={`${styles.block__card} swiper-slide`}>
                   <img
-                    src="/block-12.svg"
+                    src="/block-17.svg"
                     alt="image"
                     className={styles.block__img}
                   />
@@ -124,7 +124,7 @@ export default function Page() {
                 your crew. Start sharing and start earning today!
               </p>
               <img
-                src="/block-10.svg"
+                src="/block-9.svg"
                 alt="image"
                 className={styles.explore__planet}
               />
@@ -142,7 +142,7 @@ export default function Page() {
               </div>
             </div>
             <img
-              src="/block-8.svg"
+              src="/about-img.png"
               alt="image"
               className={styles.explore__img}
             />
@@ -151,16 +151,16 @@ export default function Page() {
         {/*==================== FAQs ====================*/}
         <section className={`${styles.faq} ${styles.section}`} id="history">
           <h2 className={styles.section__title}>
-            NEED TO <span> KNOW</span>
+            QUESTIONS? <span>WE GOT ANSWERS 🔥</span>
           </h2>
-          <img src="/block-15.svg" alt="image" className={styles.faq__image1} />
-          <img src="/block-20.svg" alt="image" className={styles.faq__image2} />
+          <img src="/block-12.svg" alt="image" className={styles.faq__image1} />
+          <img src="/block-9.svg" alt="image" className={styles.faq__image2} />
           <div
             className={`${styles.faq__container} ${styles.container} ${styles.grid}`}
           >
             <article className={styles.faq__card}>
               <img
-                src="/block-18.svg"
+                src="/block-8.svg"
                 alt="image"
                 className={styles.faq__img}
               />

@@ -94,7 +94,7 @@ export default function Page() {
               <div className={`${styles.block__content} ${styles.grid}`}>
                 <article className={styles.block__card}>
                   <img
-                    src="/block-12.svg"
+                    src="/block-17.svg"
                     alt="image"
                     className={styles.block__img}
                   />

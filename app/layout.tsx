@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Audiowide, Figtree } from "next/font/google";
+import { Cherry_Bomb_One, Figtree } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import ScrollUp from "@/components/scroll-up";
@@ -13,7 +13,7 @@ const figtree = Figtree({
   subsets: ["latin"],
 });
 
-const audiowide = Audiowide({
+const cherryBombOne = Cherry_Bomb_One({
   variable: "--second-font",
   weight: "400",
   subsets: ["latin"],
@@ -62,7 +62,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${figtree.variable} ${audiowide.variable}`}>
+      <body className={`${figtree.variable} ${cherryBombOne.variable}`}>
         {children}
         {/* Google Analytics */}
         <Script
