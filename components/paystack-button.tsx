@@ -20,7 +20,7 @@ const PaystackButton = ({
   const paystackConfig = {
     reference: new Date().getTime().toString(),
     email,
-    amount: 100000, //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
+    amount: 120000, //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLICKEY!,
   };
 

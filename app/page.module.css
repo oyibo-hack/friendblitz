@@ -252,7 +252,7 @@
 }
 
 .block__swiper {
-  padding-top: 3rem;
+  padding-top: 6rem;
 }
 
 .block__content {
@@ -839,18 +839,6 @@
   color: var(--white-color);
   position: relative;
   z-index: 1;
-
-  /* Remove autofill styles */
-  caret-color: var(--white-color);
-}
-
-.login__input:-webkit-autofill,
-.login__input:-webkit-autofill:hover,
-.login__input:-webkit-autofill:focus,
-.login__input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-  -webkit-text-fill-color: var(--white-color) !important;
-  transition: background-color 5000s ease-in-out 0s;
 }
 
 .login__boxInput {
@@ -910,6 +898,7 @@
 
 .login__forgot {
   color: var(--white-color);
+  cursor: pointer;
 }
 
 .login__forgot:hover {

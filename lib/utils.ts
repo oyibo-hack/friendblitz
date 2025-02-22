@@ -11,6 +11,59 @@ import {
   where,
 } from "firebase/firestore";
 
+// Function to get user country and IP address
+export const getUserLocation = async () => {
+  try {
+    const response = await fetch(
+      `https://ipinfo.io/json?token=${process.env.NEXT_PUBLIC_IP_TOKEN}`
+    ); // Replace with your API token
+    const data = await response.json();
+    return { country: data.country, ip: data.ip };
+  } catch (error) {
+    console.error("Error fetching location:", error);
+    return { country: "Unknown", ip: "0.0.0.0" };
+  }
+};
+
+// Function to get device information (OS, Browser, Device Model)
+export const getDeviceInfo = () => {
+  const userAgent = navigator.userAgent;
+  let os = "Unknown OS";
+  let browser = "Unknown Browser";
+  let deviceModel = "Unknown Device";
+
+  if (/Windows/i.test(userAgent)) os = "Windows";
+  else if (/Mac/i.test(userAgent)) os = "MacOS";
+  else if (/Android/i.test(userAgent)) os = "Android";
+  else if (/iPhone|iPad|iPod/i.test(userAgent)) os = "iOS";
+
+  if (/Chrome/i.test(userAgent)) browser = "Chrome";
+  else if (/Firefox/i.test(userAgent)) browser = "Firefox";
+  else if (/Safari/i.test(userAgent)) browser = "Safari";
+  else if (/Edge/i.test(userAgent)) browser = "Edge";
+
+  if (/iPhone/i.test(userAgent)) deviceModel = "iPhone";
+  else if (/Samsung/i.test(userAgent)) deviceModel = "Samsung";
+  else if (/Pixel/i.test(userAgent)) deviceModel = "Google Pixel";
+  else if (/Windows/i.test(userAgent)) deviceModel = "PC";
+  else if (/Mac/i.test(userAgent)) deviceModel = "MacBook";
+
+  return { os, browser, deviceModel };
+};
+
+// Function to check dark mode preference
+export const isDarkModeEnabled = () => {
+  return (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+};
+
+// Function to get screen resolution
+export const getScreenResolution = () => {
+  return `${window.screen.width}x${window.screen.height}`;
+};
+
 /**
  * Implements the Caesar Cipher encryption/decryption algorithm.
  * It supports both encoding and decoding modes, and optionally encodes/decodes the result in Base64.
@@ -448,21 +501,21 @@ export function getVTUReward(
     [
       "mtn",
       {
-        airtime: [200, 500, 200, 50, 200, 500, 200, 100, 300, 500, 100],
+        airtime: [300, 500, 300, 100, 300, 500, 300, 300, 300, 500, 100],
         data: ["500", "M1024", "500", "500", "M1024"],
       },
     ],
     [
       "airtel",
       {
-        airtime: [200, 500, 200, 50, 200, 500, 200, 100, 300, 500, 100],
+        airtime: [300, 500, 300, 100, 300, 500, 300, 300, 300, 500, 100],
         data: ["AIRTEL1GB", "airt-550", "AIRTEL1GB", "AIRTEL1GB", "AIRTEL1GB"],
       },
     ],
     [
       "glo",
       {
-        airtime: [200, 500, 200, 50, 200, 500, 200, 100, 300, 500, 100],
+        airtime: [300, 500, 300, 100, 300, 500, 300, 300, 300, 500, 100],
         data: ["glo100x", "glo200x", "G500", "glo100x", "glo200x", "glo100x"],
       },
     ],

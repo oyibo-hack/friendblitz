@@ -5,8 +5,12 @@ import styles from "../page.module.css";
 import { useEffect, useRef, useState } from "react";
 import {
   caesarCipher,
+  getDeviceInfo,
   getMNO,
+  getScreenResolution,
+  getUserLocation,
   getVTUReward,
+  isDarkModeEnabled,
   manageUserFriends,
   mergeUsername,
   VTUService,
@@ -17,6 +21,7 @@ import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import {
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth, db } from "../firebase";
@@ -35,6 +40,7 @@ export default function Page() {
 
   const [isLoginView, setIsLoginView] = useState(true);
 
+  const [emailInput, setEmailInput] = useState("");
   const [showPassword, setShowPassword] = useState(false); // Toggle password visibility
 
   const [isAgreed, setIsAgreed] = useState<boolean>(false);
@@ -152,8 +158,27 @@ export default function Page() {
       );
       const user = userCredential.user;
 
+      const { country: userCountry, ip: userIP } = await getUserLocation();
+      const {
+        os: deviceOS,
+        browser: deviceBrowser,
+        deviceModel,
+      } = getDeviceInfo();
+      // const authMethod = getAuthMethod(user);
+      const darkMode = isDarkModeEnabled();
+      const screenResolution = getScreenResolution();
+
       // Save user data to Firestore
       await setDoc(doc(db, "users", user.uid), {
+        country: userCountry, // 🌍 User's country
+        device_info: {
+          os: deviceOS,
+          browser: deviceBrowser,
+          model: deviceModel,
+          screen_resolution: screenResolution,
+          is_mobile: /Mobi|Android/i.test(navigator.userAgent),
+        },
+        ip_address: userIP,
         id: user.uid,
         username: mergeUsername(
           userList,
@@ -161,13 +186,21 @@ export default function Page() {
         )[0],
         tokens: 0,
         email,
+        mno: getMNO(phoneNumber),
         phone_number: caesarCipher(
           phoneNumber,
           Number(process.env.NEXT_PUBLIC_CIPHER_SHIFT!),
           "encode",
           true
         ),
-        created_at: new Date().toString(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        language: navigator.language,
+        is_dark_mode: darkMode,
+        user_agent: navigator.userAgent,
+        last_login: new Date().toISOString(),
+        login_method: user.providerData[0].providerId,
+        referrer: document.referrer,
+        created_at: new Date().toISOString(),
       });
 
       // Handle friend referral reward
@@ -247,6 +280,31 @@ export default function Page() {
       toast.error(error instanceof Error ? error.message : String(error));
     } finally {
       setLoginLoading(false);
+    }
+  };
+
+  // Handles password reset for users.
+  const forgetPassword = async () => {
+    // Prompt user to enter their registered email
+    const email = prompt("Enter your registered email for password reset:");
+
+    // If no email is entered, show an error message
+    if (!email) {
+      toast.error("Email is required to reset password.");
+      return;
+    }
+
+    try {
+      // Send password reset email using Firebase Auth
+      await sendPasswordResetEmail(auth, email);
+
+      // Notify user to check their inbox for the reset link
+      toast.success("Password reset link sent! Check your inbox.");
+    } catch (error) {
+      // Handle and display any errors that occur
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong!"
+      );
     }
   };
 
@@ -336,9 +394,9 @@ export default function Page() {
                 Remember me
               </label>
             </div>
-            <a href="#" className={styles.login__forgot}>
+            <p onClick={forgetPassword} className={styles.login__forgot}>
               Forgot Password?
-            </a>
+            </p>
           </div>
           <button
             type="submit"
@@ -371,7 +429,7 @@ export default function Page() {
         <form ref={formRef} onSubmit={register} className={styles.login__form}>
           <h1 className={styles.login__title}>Create new account.</h1>
           <div className={styles.login__content}>
-            <div className={styles.login__box}>
+            <div className={styles.login__box} id="phone-box">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -388,7 +446,29 @@ export default function Page() {
                   className={styles.login__input}
                   id="register-phone"
                   placeholder=" "
+                  maxLength={11} // Ensures no more than 11 digits
+                  pattern="[0-9]{11}" // Ensures only 11 digits are entered
+                  onChange={(e) => {
+                    const value = e.target.value.trim(); // Trim to remove any accidental spaces
+
+                    // Ensure the value contains only numbers
+                    if (!/^\d+$/.test(value)) {
+                      document.getElementById("phone-box")!.style.borderColor =
+                        "red";
+                      return;
+                    }
+
+                    // If less than 11 digits or invalid MNO, show error
+                    if (value.length < 11 || !getMNO(value)) {
+                      document.getElementById("phone-box")!.style.borderColor =
+                        "red";
+                    } else {
+                      document.getElementById("phone-box")!.style.borderColor =
+                        ""; // Reset border
+                    }
+                  }}
                 />
+
                 <label htmlFor="register-phone" className={styles.login__label}>
                   Phone Number
                 </label>
@@ -411,6 +491,10 @@ export default function Page() {
                   className={styles.login__input}
                   id="register-email"
                   placeholder=" "
+                  // value={emailInput}
+                  onChange={(e) => {
+                    setEmailInput(e.target.value);
+                  }}
                 />
                 <label htmlFor="register-email" className={styles.login__label}>
                   Email
@@ -476,10 +560,8 @@ export default function Page() {
                 htmlFor="register-check"
                 className={styles.login__checkLabel}
               >
-                I agree to the{" "}
-                <a href="/rules" className="text-blue-500 underline">
-                  rules
-                </a>
+                I agree to the <a href="/rules">rules</a> and{" "}
+                <a href="/privacy-policy">privacy policy</a>.
               </label>
             </div>
           </div>
@@ -517,11 +599,15 @@ export default function Page() {
       <div className={`modal ${modalVisible ? "activeModal" : ""}`}>
         <div className="modal__container">
           <article className={styles.block__card}>
-            <img src="/block-14.svg" alt="image" className={styles.block__img} />
+            <img
+              src="/block-14.svg"
+              alt="image"
+              className={styles.block__img}
+            />
 
             {ENABLE_PAYMENT ? (
               <h3 className={styles.block__title}>
-                Get a membership for ₦1000.
+                Get a membership for ₦1200.
               </h3>
             ) : (
               <h3 className={styles.block__title}>
@@ -531,7 +617,7 @@ export default function Page() {
             {ENABLE_PAYMENT ? (
               <PaystackButton
                 className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                email={"test@gmail.com"}
+                email={emailInput}
                 onSuccess={() => {
                   formRef.current?.requestSubmit();
                 }}

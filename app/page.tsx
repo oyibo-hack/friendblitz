@@ -153,7 +153,7 @@ export default function Page() {
           <h2 className={styles.section__title}>
             QUESTIONS? <span>WE GOT ANSWERS 🔥</span>
           </h2>
-          <img src="/block-12.svg" alt="image" className={styles.faq__image1} />
+          {/* <img src="/block-12.svg" alt="image" className={styles.faq__image1} /> */}
           <img src="/block-9.svg" alt="image" className={styles.faq__image2} />
           <div
             className={`${styles.faq__container} ${styles.container} ${styles.grid}`}
