@@ -4,6 +4,7 @@ import Header from "@/components/header";
 import styles from "../../page.module.css";
 import Contact from "@/components/contact";
 import Footer from "@/components/footer";
+import { toast } from "sonner";
 
 function Puzzle() {
   return (
@@ -23,7 +24,7 @@ function Puzzle() {
           >
             <article className={styles.widget__card}>
               <img
-                src="/block-5.svg"
+                src="/block-25.svg"
                 alt="image"
                 className={styles.widget__img}
               />
@@ -32,7 +33,8 @@ function Puzzle() {
                 Match all dice in Tenzi within 20 seconds to earn 0.2 tokens.
               </p>
               <a
-                href="puzzle/tenzi"
+                // href="puzzle/tenzi"
+                onClick={() => toast.error("Something went wrong.")}
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -48,7 +50,7 @@ function Puzzle() {
             </article>
             <article className={styles.widget__card}>
               <img
-                src="/block-5.svg"
+                src="/block-26.svg"
                 alt="image"
                 className={styles.widget__img}
               />
@@ -57,7 +59,8 @@ function Puzzle() {
                 Guess the Nigerian state in Hangman to earn 0.2 tokens.
               </p>
               <a
-                href="puzzle/hangman"
+                // href="puzzle/hangman"
+                onClick={() => toast.error("Something went wrong.")}
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -73,7 +76,7 @@ function Puzzle() {
             </article>
             <article className={styles.widget__card}>
               <img
-                src="/block-5.svg"
+                src="/block-27.svg"
                 alt="image"
                 className={styles.widget__img}
               />
@@ -82,7 +85,8 @@ function Puzzle() {
                 Win the game of Tic Tac Toe to earn 1 tokens.
               </p>
               <a
-                href="puzzle/tic-tac-toe"
+                // href="puzzle/tic-tac-toe"
+                onClick={() => toast.error("Something went wrong.")}
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg

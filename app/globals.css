@@ -228,6 +228,24 @@ img {
   }
 }
 
+@keyframes bounceTwice {
+  0%,
+  4%,
+  10%,
+  14%,
+  100% {
+    transform: translateY(0);
+  }
+  2%,
+  8% {
+    transform: translateY(-20px);
+  }
+}
+
+.animated-bounce-twice {
+  animation: bounceTwice 27s ease-in-out infinite;
+}
+
 /*=============== SCROLL BAR ===============*/
 ::-webkit-scrollbar {
   width: 0.6rem;

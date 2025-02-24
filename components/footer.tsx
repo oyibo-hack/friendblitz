@@ -11,8 +11,8 @@ function Footer() {
       <div
         className={`${styles.footer__container} ${styles.container} ${styles.grid}`}
       >
-        <img src="/block-19.svg" alt="image" className={styles.footer__img1} />
-        <img src="/block-9.svg" alt="image" className={styles.footer__img2} />
+        <img src="/block-21.svg" alt="image" className={styles.footer__img1} />
+        <img src="/block-22.svg" alt="image" className={styles.footer__img2} />
         <div className={`${styles.footer__content} ${styles.grid}`}>
           <ul className={styles.footer__links}>
             {[

@@ -40,7 +40,10 @@ export default function Page() {
           </div>
         </section>
         {/*==================== BLOCK ====================*/}
-        <section className={`${styles.block} ${styles.section}`} id="block">
+        <section
+          className={`${styles.block} ${styles.section}`}
+          id="how-it-works"
+        >
           <img
             src="/block-lines.svg"
             alt="image"
@@ -149,12 +152,12 @@ export default function Page() {
           </div>
         </section>
         {/*==================== FAQs ====================*/}
-        <section className={`${styles.faq} ${styles.section}`} id="history">
+        <section className={`${styles.faq} ${styles.section}`} id="faq">
           <h2 className={styles.section__title}>
             START SHARING NOW <span>AND GET REWARDED</span>
           </h2>
           {/* <img src="/block-12.svg" alt="image" className={styles.faq__image1} /> */}
-          <img src="/block-9.svg" alt="image" className={styles.faq__image2} />
+          <img src="/block-24.svg" alt="image" className={styles.faq__image2} />
           <div
             className={`${styles.faq__container} ${styles.container} ${styles.grid}`}
           >

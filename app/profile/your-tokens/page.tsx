@@ -167,7 +167,7 @@ function YourTokens() {
   }
 
   if (error) {
-    return <pre>{error}</pre>;
+    return <h2 className={styles.section__title}>{error}</h2>;
   }
 
   if (!user) return null;

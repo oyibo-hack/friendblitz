@@ -55,7 +55,7 @@ function ManageAccount() {
   }
 
   if (error) {
-    return <pre>{error}</pre>;
+    return <h2 className={styles.section__title}>{error}</h2>;
   }
 
   if (!user) return null;
@@ -69,7 +69,7 @@ function ManageAccount() {
         {/*==================== WIDGET ====================*/}
         <section className={`${styles.widget} ${styles.section}`} id="widget">
           <h2 className={styles.section__title}>
-            MANAGE <span>ACCOUNT</span>
+            MANAGE YOUR <span>ACCOUNT</span>
           </h2>
           <div
             className={`${styles.widget__container} ${styles.container} ${styles.grid}`}

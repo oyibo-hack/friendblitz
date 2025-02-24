@@ -77,7 +77,7 @@ export default function Page() {
   }
 
   if (error) {
-    return <pre>{error}</pre>;
+    return <h2 className={styles.section__title}>{error}</h2>;
   }
 
   if (!user) return null;
@@ -91,20 +91,20 @@ export default function Page() {
         {/*==================== WIDGET ====================*/}
         <section className={`${styles.widget} ${styles.section}`} id="widget">
           <h2 className={styles.section__title}>
-            MY <span>PROFILE</span>
+            HELLO, <span>{user.username.toUpperCase()} </span>
           </h2>
 
           <div
             className={`${styles.widget__container} ${styles.container} ${styles.grid}`}
           >
-            <article className={styles.widget__card}>
+            <article className={`${styles.widget__card} animated-bounce-twice`}>
               <img
-                src="/block-1.svg"
+                src="/block-20.svg"
                 alt="image"
                 className={styles.widget__img}
               />
               <p className={styles.widget__description}>
-                <span>Hello, {user.username}</span>
+                <span>Invite & Earn Rewards</span>
                 Copy your unique invite link to share with friends
               </p>
               <button
@@ -162,8 +162,7 @@ export default function Page() {
                   {friends.filter((friend) => friend.is_claimed === false)
                     .length || 0}
                 </span>
-                Check out your unredeemed invites and grab rewards like data or
-                airtime!
+                View unredeemed invites and claim rewards like data or airtime.
               </p>
               <a
                 href="/profile/rewards"
@@ -213,7 +212,7 @@ export default function Page() {
               />
               <p className={styles.widget__description}>
                 <span>{user.tokens.toFixed(2) || 0}</span>
-                View and trade your earn tokens for airtime and data.
+                Check your token balance and trade tokens for airtime or data.
               </p>
               <a
                 href="/profile/your-tokens"
@@ -237,8 +236,8 @@ export default function Page() {
                 className={styles.widget__img}
               />
               <p className={styles.widget__description}>
-                <span>Play Puzzle</span>
-                Play puzzle games to earn tokens!
+                <span>Play & Earn Tokens</span>
+                Play puzzle games to collect more tokens!
               </p>
               <a
                 href="/profile/puzzle"
@@ -262,8 +261,8 @@ export default function Page() {
                 className={styles.widget__img}
               />
               <p className={styles.widget__description}>
-                <span>Challenges</span>
-                Complete challenges to earn tokens.
+                <span>Complete Challenges & Get Rewards</span>
+                Finish challenges to earn extra tokens.
               </p>
               <a
                 href="/profile/challenges"
@@ -287,7 +286,7 @@ export default function Page() {
                 className={styles.widget__img}
               />
               <p className={styles.widget__description}>
-                <span>Manage Account</span>
+                <span>Manage Your Account </span>
                 Delete or log out of your account anytime.
               </p>
               <a
@@ -317,7 +316,11 @@ export default function Page() {
       <div className={`modal ${modalVisible ? "activeModal" : ""}`}>
         <div className="modal__container">
           <article className={styles.block__card}>
-            <img src="/block-2.svg" alt="image" className={styles.block__img} />
+            <img
+              src="/block-23.svg"
+              alt="image"
+              className={styles.block__img}
+            />
             <h3 className={styles.block__title}>Welcome, {user.username}!</h3>
             <span className={styles.block__info}></span>
             <p className={styles.block__description}>
