@@ -128,88 +128,77 @@ function Rewards() {
       <Header />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
-        {/*==================== BLOCK ====================*/}
-        <section className={`${styles.block} ${styles.section}`} id="block">
-          <img
-            src="/block-lines.svg"
-            alt="image"
-            className={styles.block__lines}
-          />
+        {/*==================== WIDGET ====================*/}
+        <section className={`${styles.widget} ${styles.section}`} id="widget">
+          <h2 className={styles.section__title}>
+            CLAIM YOUR <span>REWARDS & INVITES</span>
+          </h2>
 
-          <div className={`${styles.block__container} ${styles.container}`}>
-            <h2 className={styles.section__title}>
-              CLAIM YOUR <span>REWARDS & INVITES</span>
-            </h2>
+          <div
+            className={`${styles.widget__container} ${styles.container} ${styles.grid}`}
+          >
+            {unclaimedFriends.length === 0 ? (
+              <h2 className={styles.section__title}>
+                You haven&apos;t invited any friends yet. Start inviting to
+                claim rewards!
+              </h2>
+            ) : (
+              unclaimedFriends.map((friend, index) => {
+                return (
+                  <article key={index} className={styles.widget__card}>
+                    <img
+                      src="/block-2.svg"
+                      alt="image"
+                      className={styles.widget__img}
+                    />
+                    <p className={styles.widget__description}>
+                      <span>{friend.username} Joined</span>
+                      {friend.airtime
+                        ? `Claim ₦${friend.airtime} Airtime`
+                        : `Claim ${
+                            network !== "Unknown" &&
+                            convertBundle(network, friend.data!)
+                          } Data`}
+                    </p>
 
-            <div className={styles.block__swiper}>
-              {unclaimedFriends.length === 0 ? (
-                <h2 className={styles.section__title}>
-                  You haven&apos;t invited any friends yet. Start inviting to
-                  claim rewards!
-                </h2>
-              ) : (
-                <div className={`${styles.block__content} ${styles.grid}`}>
-                  {unclaimedFriends.map((friend, index) => {
-                    return (
-                      <article key={index} className={styles.block__card}>
-                        <img
-                          src="/block-2.svg"
-                          alt="image"
-                          className={styles.block__img}
-                        />
-                        <h3 className={styles.block__title}>
-                          {friend.username} Joined
-                        </h3>
-                        <span className={styles.block__info}>
-                          {friend.airtime
-                            ? `Claim ₦${friend.airtime} Airtime`
-                            : `Claim ${
-                                network !== "Unknown" &&
-                                convertBundle(network, friend.data!)
-                              } Data`}
-                        </span>
-
-                        <button
-                          disabled={claimStatus[friend.id]}
-                          className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                          onClick={() => claimBonus(friend)}
+                    <button
+                      disabled={claimStatus[friend.id]}
+                      className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+                      onClick={() => claimBonus(friend)}
+                    >
+                      {claimStatus[friend.id] ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width={24}
+                          height={24}
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={3.5}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="animate-spin"
                         >
-                          {claimStatus[friend.id] ? (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              width={24}
-                              height={24}
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={3.5}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="animate-spin"
-                            >
-                              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                            </svg>
-                          ) : (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              width={24}
-                              height={24}
-                            >
-                              <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                            </svg>
-                          )}
-                        </button>
-                      </article>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          width={24}
+                          height={24}
+                        >
+                          <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                        </svg>
+                      )}
+                    </button>
+                  </article>
+                );
+              })
+            )}
           </div>
         </section>
-
         {/*==================== CONTACT ====================*/}
         <Contact />
       </main>

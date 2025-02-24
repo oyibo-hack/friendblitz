@@ -1,10 +1,10 @@
-import styles from '../app/page.module.css'
+import styles from "../app/page.module.css";
 
 function Contact() {
   return (
     <section className={`${styles.contact} ${styles.section}`}>
       <h2 className={styles.section__title}>
-        GET OUR <span>LATEST NEWS</span>
+        READY TO<span>GET FREE STUFF</span>
       </h2>
       <div
         className={`${styles.contact__container} ${styles.container} ${styles.grid}`}

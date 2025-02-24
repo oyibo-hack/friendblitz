@@ -252,14 +252,7 @@
 }
 
 .block__swiper {
-  padding-top: 6rem;
-}
-
-.block__content {
-  position: relative;
-  row-gap: 2.5rem;
-  grid-template-columns: 265px;
-  justify-content: center;
+  padding-top: 3rem;
 }
 
 .block__card {
@@ -278,7 +271,7 @@
   left: 0;
   right: 0;
   margin: 0 auto;
-  transform: rotate(-10deg);
+  /* transform: rotate(-10deg); */
   transition: transform 0.6s;
 }
 
@@ -534,6 +527,46 @@
   bottom: 3rem;
 }
 
+/*=============== WIDGET ===============*/
+.widget {
+  position: relative;
+}
+
+.widget__container {
+  position: relative;
+  row-gap: 2.5rem;
+  grid-template-columns: 265px;
+  justify-content: center;
+}
+
+.widget__card {
+  text-align: center;
+}
+
+.widget__img {
+  width: 150px;
+  margin: 0 auto 0.75rem;
+  transform: rotate(-10deg);
+}
+
+.widget__description span {
+  display: block;
+  color: var(--first-color);
+  font-weight: var(--font-semi-bold);
+  font-family: var(--second-font);
+}
+
+.widget__button {
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  font-weight: initial;
+  cursor: pointer;
+}
+
 /*=============== BREAKPOINTS ===============*/
 /* For small devices */
 @media screen and (max-width: 340px) {
@@ -590,8 +623,8 @@
     order: -1;
   }
 
-  .block__content,
-  .faq__container {
+  .faq__container,
+  .widget__container {
     grid-template-columns: repeat(2, 265px);
   }
 
@@ -729,13 +762,14 @@
     right: -4rem;
   }
 
-  .block__content,
-  .faq__container {
+  .faq__container,
+  .widget__container {
     grid-template-columns: repeat(3, 265px);
     column-gap: 5rem;
   }
 
-  .faq__img {
+  .faq__img,
+  .widget__img {
     width: 200px;
     margin-bottom: 1rem;
   }

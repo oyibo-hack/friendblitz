@@ -60,40 +60,36 @@ function YourFriends() {
       <Header />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
-        {/*==================== BLOCK ====================*/}
-        <section className={`${styles.block} ${styles.section}`} id="block">
-          <img
-            src="/block-lines.svg"
-            alt="image"
-            className={styles.block__lines}
-          />
-
-          <div className={`${styles.block__container} ${styles.container}`}>
-            <h2 className={styles.section__title}>
-              YOUR <span>FRIENDS & INVITES</span>
-            </h2>
-
-            <div className={styles.block__swiper}>
-              <div className={`${styles.block__content} ${styles.grid}`}>
-                {friendLists.map((friend, index) => {
-                  return (
-                    <article key={index} className={styles.block__card}>
-                      <img
-                        src="/block-3.svg"
-                        alt="image"
-                        className={styles.block__img}
-                      />
-                      <h3 className={styles.block__title}>
-                        {friend.username} - Rewarded 🎉
-                      </h3>
-                      <span className={styles.block__info}>
-                        {moment(friend.created_at, "YYYYMMDD").fromNow()}
-                      </span>
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
+        {/*==================== WIDGET ====================*/}
+        <section className={`${styles.widget} ${styles.section}`} id="widget">
+          <h2 className={styles.section__title}>
+            YOUR <span>FRIENDS & INVITES</span>
+          </h2>
+          <div
+            className={`${styles.widget__container} ${styles.container} ${styles.grid}`}
+          >
+            {friendLists.length === 0 ? (
+              <h2 className={styles.section__title}>
+                You haven&apos;t invited any friends yet. Start inviting to
+                claim rewards!
+              </h2>
+            ) : (
+              friendLists.map((friend, index) => {
+                return (
+                  <article key={index} className={styles.widget__card}>
+                    <img
+                      src="/block-3.svg"
+                      alt="image"
+                      className={styles.widget__img}
+                    />
+                    <p className={styles.widget__description}>
+                      <span>{friend.username} - Rewarded 🎉</span>
+                      {moment(friend.created_at, "YYYYMMDD").fromNow()}
+                    </p>
+                  </article>
+                );
+              })
+            )}
           </div>
         </section>
         {/*==================== CONTACT ====================*/}

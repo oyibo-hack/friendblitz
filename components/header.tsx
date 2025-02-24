@@ -26,7 +26,7 @@ function Header() {
           spaceBetween: 32,
           grabCursor: true,
           slidesPerView: "auto",
-          centeredSlides: "auto",
+          // centeredSlides: "auto",
           pagination: {
             el: ".swiper-pagination",
             clickable: true,
@@ -66,7 +66,7 @@ function Header() {
         });
 
         sr.reveal(
-          `.${styles.home__data}, .${styles.block__swiper}, .${styles.block__content}, .${styles.contact__container}`
+          `.${styles.home__data}, .${styles.block__swiper}, .${styles.block__content}, .${styles.widget__container}, .${styles.contact__container}`
         );
         sr.reveal(`.${styles.home__img}`, { origin: "bottom" });
         sr.reveal(`.${styles.home__image}`, { delay: 800 });
@@ -192,31 +192,25 @@ function Header() {
           </ul>
 
           {/* Close Button */}
-          <div
-            className={styles.nav__close}
-            id="nav-close"
-            onClick={toggleMenu}
-          >
+          <div id="nav-close" onClick={toggleMenu}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
+              className={styles.nav__close}
             >
               <path d="M10.5859 12L2.79297 4.20706L4.20718 2.79285L12.0001 10.5857L19.793 2.79285L21.2072 4.20706L13.4143 12L21.2072 19.7928L19.793 21.2071L12.0001 13.4142L4.20718 21.2071L2.79297 19.7928L10.5859 12Z" />
             </svg>
           </div>
-          <img src="/nav-img.svg" alt="image" className={styles.nav__img} />
+          <img src="/block-9.svg" alt="image" className={styles.nav__img} />
         </div>
         {/* Toggle Button */}
-        <div
-          className={styles.nav__toggle}
-          id="nav-toggle"
-          onClick={toggleMenu}
-        >
+        <div id="nav-toggle" onClick={toggleMenu}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
+            className={styles.nav__toggle}
           >
             <path d="M16 18V20H5V18H16ZM21 11V13H3V11H21ZM19 4V6H8V4H19Z" />
           </svg>

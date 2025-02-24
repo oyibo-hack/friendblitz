@@ -88,244 +88,223 @@ export default function Page() {
       <Header />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
-        {/*==================== BLOCK ====================*/}
-        <section className={`${styles.block} ${styles.section}`} id="block">
-          <img
-            src="/block-lines.svg"
-            alt="image"
-            className={styles.block__lines}
-          />
+        {/*==================== WIDGET ====================*/}
+        <section className={`${styles.widget} ${styles.section}`} id="widget">
+          <h2 className={styles.section__title}>
+            MY <span>PROFILE</span>
+          </h2>
 
-          <div className={`${styles.block__container} ${styles.container}`}>
-            <h2 className={styles.section__title}>
-              MY <span>PROFILE</span>
-            </h2>
+          <div
+            className={`${styles.widget__container} ${styles.container} ${styles.grid}`}
+          >
+            <article className={styles.widget__card}>
+              <img
+                src="/block-1.svg"
+                alt="image"
+                className={styles.widget__img}
+              />
+              <p className={styles.widget__description}>
+                <span>Hello, {user.username}</span>
+                Copy your unique invite link to share with friends
+              </p>
+              <button
+                type="button"
+                className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+                onClick={() => {
+                  if (!user) return;
 
-            <div className={styles.block__swiper}>
-              <div className={`${styles.block__content} ${styles.grid}`}>
-                <article id="share" className={styles.block__card}>
-                  <img
-                    src="/block-1.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>
-                    Hello, {user.username}
-                  </h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    Copy your unique invite link to share with friends
-                  </p>
-                  <button
-                    type="button"
-                    className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                    onClick={() => {
-                      if (!user) return;
+                  const link = `${location.origin}/join?friend=${user.username
+                    .split(" ")
+                    .join("-")}`;
 
-                      const link = `${
-                        location.origin
-                      }/join?friend=${user.username.split(" ").join("-")}`;
-
-                      if (navigator.share) {
-                        // Use navigator.share if available
-                        navigator
-                          .share({
-                            title: `Hi, I'm ${user["username"]}. Use my link.`,
-                            url: link,
-                          })
-                          .then(() => console.log("Share successful!"))
-                          .catch((error) =>
-                            console.error("Error sharing:", error)
-                          );
-                      } else {
-                        // Fallback: Copy to clipboard
-                        navigator.clipboard
-                          .writeText(link)
-                          .then(() => alert("Link copied to clipboard!"))
-                          .catch((error) =>
-                            console.error(
-                              "Could not copy text to clipboard:",
-                              error
-                            )
-                          );
-                      }
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width={24}
-                      height={24}
-                    >
-                      <path d="M6.9998 6V3C6.9998 2.44772 7.44752 2 7.9998 2H19.9998C20.5521 2 20.9998 2.44772 20.9998 3V17C20.9998 17.5523 20.5521 18 19.9998 18H16.9998V20.9991C16.9998 21.5519 16.5499 22 15.993 22H4.00666C3.45059 22 3 21.5554 3 20.9991L3.0026 7.00087C3.0027 6.44811 3.45264 6 4.00942 6H6.9998ZM5.00242 8L5.00019 20H14.9998V8H5.00242ZM8.9998 6H16.9998V16H18.9998V4H8.9998V6Z" />
-                    </svg>
-                  </button>
-                </article>
-                <article id="rewards" className={styles.block__card}>
-                  <img
-                    src="/block-2.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Rewards</h3>
-                  <span className={styles.block__info}>
-                    {friends.filter((friend) => friend.is_claimed === false)
-                      .length || 0}
-                  </span>
-                  <p className={styles.block__description}>
-                    Check out your unredeemed invites and grab rewards like data
-                    or airtime!
-                  </p>
-                  <a
-                    href="/profile/rewards"
-                    className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width={24}
-                      height={24}
-                    >
-                      <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                    </svg>
-                  </a>
-                </article>
-                <article id="friends" className={styles.block__card}>
-                  <img
-                    src="/block-3.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Your Friends</h3>
-                  <span className={styles.block__info}>
-                    {friends?.length || 0}
-                  </span>
-                  <p className={styles.block__description}>
-                    See all your friends and track your invites.
-                  </p>
-                  <a
-                    href="/profile/your-friends"
-                    className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width={24}
-                      height={24}
-                    >
-                      <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                    </svg>
-                  </a>
-                </article>
-                <article id="tokens" className={styles.block__card}>
-                  <img
-                    src="/block-4.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Your Tokens</h3>
-                  <span className={styles.block__info}>{user.tokens.toFixed(2) || 0}</span>
-                  <p className={styles.block__description}>
-                    View and trade your earn tokens for airtime and data.
-                  </p>
-                  <a
-                    href="/profile/your-tokens"
-                    className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width={24}
-                      height={24}
-                    >
-                      <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                    </svg>
-                  </a>
-                </article>
-                <article id="puzzle" className={styles.block__card}>
-                  <img
-                    src="/block-5.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Play Puzzle</h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    Play puzzle games to earn tokens!
-                  </p>
-                  <a
-                    href="/profile/puzzle"
-                    className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width={24}
-                      height={24}
-                    >
-                      <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                    </svg>
-                  </a>
-                </article>
-                <article id="challenges" className={styles.block__card}>
-                  <img
-                    src="/block-6.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Challenges</h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    Complete challenges to earn tokens.
-                  </p>
-                  <a
-                    href="/profile/challenges"
-                    className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width={24}
-                      height={24}
-                    >
-                      <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                    </svg>
-                  </a>
-                </article>
-                <article id="account" className={styles.block__card}>
-                  <img
-                    src="/block-7.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Manage Account</h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    Delete or log out of your account anytime.
-                  </p>
-                  <a
-                    href="/profile/manage-account"
-                    className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      width={24}
-                      height={24}
-                    >
-                      <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                    </svg>
-                  </a>
-                </article>
-              </div>
-            </div>
+                  if (navigator.share) {
+                    // Use navigator.share if available
+                    navigator
+                      .share({
+                        title: `Hi, I'm ${user["username"]}. Use my link.`,
+                        url: link,
+                      })
+                      .then(() => console.log("Share successful!"))
+                      .catch((error) => console.error("Error sharing:", error));
+                  } else {
+                    // Fallback: Copy to clipboard
+                    navigator.clipboard
+                      .writeText(link)
+                      .then(() => alert("Link copied to clipboard!"))
+                      .catch((error) =>
+                        console.error(
+                          "Could not copy text to clipboard:",
+                          error
+                        )
+                      );
+                  }
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  width={24}
+                  height={24}
+                >
+                  <path d="M6.9998 6V3C6.9998 2.44772 7.44752 2 7.9998 2H19.9998C20.5521 2 20.9998 2.44772 20.9998 3V17C20.9998 17.5523 20.5521 18 19.9998 18H16.9998V20.9991C16.9998 21.5519 16.5499 22 15.993 22H4.00666C3.45059 22 3 21.5554 3 20.9991L3.0026 7.00087C3.0027 6.44811 3.45264 6 4.00942 6H6.9998ZM5.00242 8L5.00019 20H14.9998V8H5.00242ZM8.9998 6H16.9998V16H18.9998V4H8.9998V6Z" />
+                </svg>
+              </button>
+            </article>
+            <article id="rewards" className={styles.widget__card}>
+              <img
+                src="/block-2.svg"
+                alt="image"
+                className={styles.widget__img}
+              />
+              <p className={styles.widget__description}>
+                <span>
+                  {friends.filter((friend) => friend.is_claimed === false)
+                    .length || 0}
+                </span>
+                Check out your unredeemed invites and grab rewards like data or
+                airtime!
+              </p>
+              <a
+                href="/profile/rewards"
+                className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  width={24}
+                  height={24}
+                >
+                  <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                </svg>
+              </a>
+            </article>
+            <article id="friends" className={styles.widget__card}>
+              <img
+                src="/block-3.svg"
+                alt="image"
+                className={styles.widget__img}
+              />
+              <p className={styles.widget__description}>
+                <span>{friends?.length || 0}</span>
+                See all your friends and track your invites.
+              </p>
+              <a
+                href="/profile/your-friends"
+                className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  width={24}
+                  height={24}
+                >
+                  <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                </svg>
+              </a>
+            </article>
+            <article id="tokens" className={styles.widget__card}>
+              <img
+                src="/block-4.svg"
+                alt="image"
+                className={styles.widget__img}
+              />
+              <p className={styles.widget__description}>
+                <span>{user.tokens.toFixed(2) || 0}</span>
+                View and trade your earn tokens for airtime and data.
+              </p>
+              <a
+                href="/profile/your-tokens"
+                className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  width={24}
+                  height={24}
+                >
+                  <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                </svg>
+              </a>
+            </article>
+            <article id="puzzle" className={styles.widget__card}>
+              <img
+                src="/block-5.svg"
+                alt="image"
+                className={styles.widget__img}
+              />
+              <p className={styles.widget__description}>
+                <span>Play Puzzle</span>
+                Play puzzle games to earn tokens!
+              </p>
+              <a
+                href="/profile/puzzle"
+                className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  width={24}
+                  height={24}
+                >
+                  <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                </svg>
+              </a>
+            </article>
+            <article id="challenges" className={styles.widget__card}>
+              <img
+                src="/block-6.svg"
+                alt="image"
+                className={styles.widget__img}
+              />
+              <p className={styles.widget__description}>
+                <span>Challenges</span>
+                Complete challenges to earn tokens.
+              </p>
+              <a
+                href="/profile/challenges"
+                className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  width={24}
+                  height={24}
+                >
+                  <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                </svg>
+              </a>
+            </article>
+            <article id="account" className={styles.widget__card}>
+              <img
+                src="/block-7.svg"
+                alt="image"
+                className={styles.widget__img}
+              />
+              <p className={styles.widget__description}>
+                <span>Manage Account</span>
+                Delete or log out of your account anytime.
+              </p>
+              <a
+                href="/profile/manage-account"
+                className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  width={24}
+                  height={24}
+                >
+                  <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                </svg>
+              </a>
+            </article>
           </div>
         </section>
 

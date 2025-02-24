@@ -151,7 +151,7 @@ export default function Page() {
         {/*==================== FAQs ====================*/}
         <section className={`${styles.faq} ${styles.section}`} id="history">
           <h2 className={styles.section__title}>
-            QUESTIONS? <span>WE GOT ANSWERS 🔥</span>
+            START SHARING NOW <span>AND GET REWARDED</span>
           </h2>
           {/* <img src="/block-12.svg" alt="image" className={styles.faq__image1} /> */}
           <img src="/block-9.svg" alt="image" className={styles.faq__image2} />
@@ -159,11 +159,7 @@ export default function Page() {
             className={`${styles.faq__container} ${styles.container} ${styles.grid}`}
           >
             <article className={styles.faq__card}>
-              <img
-                src="/block-8.svg"
-                alt="image"
-                className={styles.faq__img}
-              />
+              <img src="/block-8.svg" alt="image" className={styles.faq__img} />
               <p className={styles.faq__description}>
                 <span>How many friends can I refer?</span>
                 There’s no limit! Invite as many friends as you want and get

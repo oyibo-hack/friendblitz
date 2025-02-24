@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import ScrollUp from "@/components/scroll-up";
 import Script from "next/script";
-import Popup from "@/components/popup";
+// import Popup from "@/components/popup";
 import { PROD_URL } from "@/lib/constant";
 
 const figtree = Figtree({
@@ -82,7 +82,7 @@ export default function RootLayout({
             `,
           }}
         />
-        <Popup routes={["/", "/profile", "/free-points"]} />
+        {/* <Popup routes={["/", "/profile", "/free-points"]} /> */}
         <ScrollUp />
         <Toaster
           position="top-center"

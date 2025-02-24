@@ -178,155 +178,143 @@ function YourTokens() {
       <Header />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
-        {/*==================== BLOCK ====================*/}
-        <section className={`${styles.block} ${styles.section}`} id="block">
-          <img
-            src="/block-lines.svg"
-            alt="image"
-            className={styles.block__lines}
-          />
-
-          <div className={`${styles.block__container} ${styles.container}`}>
-            <h2 className={styles.section__title}>
-              TRADE <span>YOUR POINTS</span>
-            </h2>
-
-            <div className={styles.block__swiper}>
-              <div className={`${styles.block__content} ${styles.grid}`}>
-                <article className={styles.block__card}>
-                  <img
-                    src="/block-4.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Trade Tokens for Airtime</h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    Trade 140 tokens for ₦1000 Airtime
-                  </p>
-                  <button
-                    disabled={loadingStates["₦1000 Airtime"]}
-                    className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                    onClick={() => purchaseBundle("₦1000 Airtime", 140)}
+        {/*==================== WIDGET ====================*/}
+        <section className={`${styles.widget} ${styles.section}`} id="widget">
+          <h2 className={styles.section__title}>
+            TRADE <span>YOUR POINTS</span>
+          </h2>
+          <div
+            className={`${styles.widget__container} ${styles.container} ${styles.grid}`}
+          >
+            <article className={styles.widget__card}>
+              <img
+                src="/block-4.svg"
+                alt="image"
+                className={styles.widget__img}
+              />
+              <p className={styles.widget__description}>
+                <span>Trade Tokens for Airtime</span>
+                Trade 140 tokens for ₦1000 Airtime
+              </p>
+              <button
+                disabled={loadingStates["₦1000 Airtime"]}
+                className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+                onClick={() => purchaseBundle("₦1000 Airtime", 140)}
+              >
+                {loadingStates["₦1000 Airtime"] ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width={24}
+                    height={24}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={3.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="animate-spin"
                   >
-                    {loadingStates["₦1000 Airtime"] ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width={24}
-                        height={24}
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={3.5}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="animate-spin"
-                      >
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        width={24}
-                        height={24}
-                      >
-                        <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                      </svg>
-                    )}
-                  </button>
-                </article>
-                <article className={styles.block__card}>
-                  <img
-                    src="/block-4.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Trade Tokens for Data</h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    Trade 75 tokens for 1GB
-                  </p>
-                  <button
-                    disabled={loadingStates["1GB Data"]}
-                    className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                    onClick={() => purchaseBundle("1GB Data", 45)}
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width={24}
+                    height={24}
                   >
-                    {loadingStates["1GB Data"] ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width={24}
-                        height={24}
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={3.5}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="animate-spin"
-                      >
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        width={24}
-                        height={24}
-                      >
-                        <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                      </svg>
-                    )}
-                  </button>
-                </article>
-                <article className={styles.block__card}>
-                  <img
-                    src="/block-4.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Trade Tokens</h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    Trade 100 tokens for Random Airtime or Data
-                  </p>
-                  <button
-                    disabled={loadingStates.random}
-                    className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-                    onClick={() => purchaseRandomBundle(60)}
+                    <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                  </svg>
+                )}
+              </button>
+            </article>
+            <article className={styles.widget__card}>
+              <img
+                src="/block-4.svg"
+                alt="image"
+                className={styles.widget__img}
+              />
+              <p className={styles.widget__description}>
+                <span>Trade Tokens for Data</span>
+                Trade 75 tokens for 1GB
+              </p>
+              <button
+                disabled={loadingStates["1GB Data"]}
+                className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+                onClick={() => purchaseBundle("1GB Data", 45)}
+              >
+                {loadingStates["1GB Data"] ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width={24}
+                    height={24}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={3.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="animate-spin"
                   >
-                    {loadingStates.random ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width={24}
-                        height={24}
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={3.5}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="animate-spin"
-                      >
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        width={24}
-                        height={24}
-                      >
-                        <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                      </svg>
-                    )}
-                  </button>
-                </article>
-              </div>
-            </div>
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width={24}
+                    height={24}
+                  >
+                    <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                  </svg>
+                )}
+              </button>
+            </article>
+            <article className={styles.widget__card}>
+              <img
+                src="/block-4.svg"
+                alt="image"
+                className={styles.widget__img}
+              />
+              <p className={styles.widget__description}>
+                <span>Trade Tokens</span>
+                Trade 100 tokens for Random Airtime or Data
+              </p>
+              <button
+                disabled={loadingStates.random}
+                className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
+                onClick={() => purchaseRandomBundle(60)}
+              >
+                {loadingStates.random ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width={24}
+                    height={24}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={3.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="animate-spin"
+                  >
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width={24}
+                    height={24}
+                  >
+                    <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                  </svg>
+                )}
+              </button>
+            </article>
           </div>
         </section>
 
