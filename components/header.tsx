@@ -66,7 +66,7 @@ function Header() {
         });
 
         sr.reveal(
-          `.${styles.home__data}, .${styles.block__swiper}, .${styles.block__content}, .${styles.widget__container}, .${styles.contact__container}`
+          `.${styles.home__data}, .${styles.block__swiper}, .${styles.widget__container}, .${styles.contact__container}`
         );
         sr.reveal(`.${styles.home__img}`, { origin: "bottom" });
         sr.reveal(`.${styles.home__image}`, { delay: 800 });
@@ -162,7 +162,7 @@ function Header() {
     <header className={styles.header} id="header">
       <nav className={`${styles.nav} ${styles.container}`}>
         <Link href="/" className={styles.nav__logo}>
-          <img src="/logo.svg" alt="image" /> Friend Blitz
+          <img src="/logo.png" alt="image" /> Friend Blitz
         </Link>
         <div
           className={`${styles.nav__menu} ${
