@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import Contact from "@/components/contact";
 import styles from "../../page.module.css";
 import { useUser } from "@/lib/hooks/use-user";
 import { type Friend, manageUserFriends, type User } from "@/lib/utils";
@@ -78,7 +77,7 @@ function YourFriends() {
                 return (
                   <article key={index} className={styles.widget__card}>
                     <img
-                      src="/block-3.svg"
+                      src="/logo-big.png"
                       alt="image"
                       className={styles.widget__img}
                     />
@@ -92,8 +91,7 @@ function YourFriends() {
             )}
           </div>
         </section>
-        {/*==================== CONTACT ====================*/}
-        <Contact />
+        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
       {/*==================== FOOTER ====================*/}
       <Footer />

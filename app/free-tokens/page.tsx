@@ -88,7 +88,7 @@ export default function Page() {
           >
             <article className={styles.widget__card}>
               <img
-                src="/block-17.svg"
+                src="/logo-big.png"
                 alt="image"
                 className={styles.widget__img}
               />
@@ -122,7 +122,7 @@ export default function Page() {
                 Take on the challenge now!
               </p>
               <a
-                href="/profile/challenges"
+                href="/my-profile/challenges"
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -147,7 +147,7 @@ export default function Page() {
                 Start solving and earn tokens!
               </p>
               <a
-                href="/profile/puzzle"
+                href="/my-profile/puzzle"
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg

@@ -74,7 +74,7 @@ export const useUser = (
               if (docSnap.exists()) {
                 const updated = docSnap.data();
                 setUser({
-                  id: authUser.uid,
+                  id: updated.id,
                   username: updated.username,
                   tokens: updated.tokens,
                   email: updated.email,
@@ -111,7 +111,7 @@ export const useUser = (
           const users = usersSnap.docs.map((doc) => {
             const data = doc.data();
             return {
-              id: data.uid,
+              id: data.id,
               username: data.username,
               tokens: data.tokens,
               email: data.email,

@@ -12,7 +12,6 @@ import {
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Footer from "@/components/footer";
-import Contact from "@/components/contact";
 
 function Challenges() {
   const { user, loading, error } = useUser(); // Fetch current user data
@@ -159,8 +158,7 @@ function Challenges() {
             ))}
           </div>
         </section>
-        {/*==================== CONTACT ====================*/}
-        <Contact />
+        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
       {/*==================== FOOTER ====================*/}
       <Footer />

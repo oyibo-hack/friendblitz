@@ -8,7 +8,6 @@ import { getMNO, tokensManager, VTUService } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
 import Footer from "@/components/footer";
-import Contact from "@/components/contact";
 
 function YourTokens() {
   const { user, loading, error } = useUser(); // Fetch current user data
@@ -317,9 +316,7 @@ function YourTokens() {
             </article>
           </div>
         </section>
-
-        {/*==================== CONTACT ====================*/}
-        <Contact />
+        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
       {/*==================== FOOTER ====================*/}
       <Footer />

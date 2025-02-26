@@ -832,8 +832,8 @@
   border: 2px solid var(--white-color);
   margin-inline: 1.5rem;
   padding: 2.5rem 1.5rem;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
 .login__title {

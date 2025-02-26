@@ -13,7 +13,6 @@ import {
 } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import Contact from "@/components/contact";
 import Footer from "@/components/footer";
 
 type FriendWithUsername = Friend & { username: string };
@@ -199,8 +198,7 @@ function Rewards() {
             )}
           </div>
         </section>
-        {/*==================== CONTACT ====================*/}
-        <Contact />
+        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
       {/*==================== FOOTER ====================*/}
       <Footer />

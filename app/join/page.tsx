@@ -13,6 +13,7 @@ import {
   isDarkModeEnabled,
   manageUserFriends,
   mergeUsername,
+  numberFormatter,
   VTUService,
   type User,
 } from "@/lib/utils";
@@ -94,6 +95,17 @@ export default function Page() {
     }
   }, [users]);
 
+  const checkPasswordStrength = (password: string) => {
+    if (password.length < 6)
+      throw new Error("Password is weak: Must be at least 6 characters.");
+    if (!/[A-Z]/.test(password))
+      throw new Error("Password is weak: Add an uppercase letter.");
+    if (!/[0-9]/.test(password))
+      throw new Error("Password is weak: Add a number.");
+    if (!/[!@#$%^&*]/.test(password))
+      throw new Error("Password is weak: Add a special character.");
+  };
+
   // User registration handler
   const register = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -103,53 +115,58 @@ export default function Page() {
     const email = (
       form.elements.namedItem("register-email") as HTMLInputElement
     ).value;
-    const phoneNumber = (
+    const registerPhone = (
       form.elements.namedItem("register-phone") as HTMLInputElement
     ).value;
     const password = (
       form.elements.namedItem("register-pass") as HTMLInputElement
     ).value;
 
-    if (!email && !phoneNumber && !password) {
+    if (![email, registerPhone, password].every(Boolean)) {
+      toast.info("Please fill in all fields.");
       return;
-    }
-
-    const mno = getMNO(phoneNumber);
-    const isKnownMNO = mno !== "Unknown";
-
-    if (!isKnownMNO) {
-      toast.error("The entered number is invalid.");
-      setIsRegisterLoading(false);
-      setModalVisible(false);
-      return;
-    }
-
-    // Check for existing user with same phone number
-    const existingUser = users?.find(
-      (user) => user.phone_number === phoneNumber
-    );
-
-    if (existingUser) {
-      toast.error(
-        `A user with phone number ${phoneNumber} is already registered.`
-      );
-      setIsRegisterLoading(false);
-      setModalVisible(false);
-      return;
-    }
-
-    // Instantiate VTU services
-    const vtuService = new VTUService();
-
-    // Check if the system balance is sufficient for the transaction
-    const isValid = await vtuService.isBalanceValidForUse();
-    if (!isValid) {
-      throw new Error(
-        "The system is under too much load. Please try again later."
-      );
     }
 
     try {
+      const phoneNumber = new numberFormatter(registerPhone, "+234");
+
+      const mno = getMNO(phoneNumber.withoutPrefix());
+      const isKnownMNO = mno !== "Unknown";
+
+      if (!isKnownMNO) {
+        toast.error("The entered number is invalid.");
+        setIsRegisterLoading(false);
+        setModalVisible(false);
+        return;
+      }
+
+      // Check for existing user with same phone number
+      const existingUser = users?.find(
+        (user) => user.phone_number === phoneNumber.withoutPrefix()
+      );
+
+      if (existingUser) {
+        toast.error(
+          `A user with phone number ${phoneNumber} is already registered.`
+        );
+        setIsRegisterLoading(false);
+        setModalVisible(false);
+        return;
+      }
+
+      // Instantiate VTU services
+      const vtuService = new VTUService();
+
+      // Check if the system balance is sufficient for the transaction
+      const isValid = await vtuService.isBalanceValidForUse();
+      if (!isValid) {
+        throw new Error(
+          "The system is under too much load. Please try again later."
+        );
+      }
+
+      checkPasswordStrength(password);
+
       // Create user in Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -164,7 +181,6 @@ export default function Page() {
         browser: deviceBrowser,
         deviceModel,
       } = getDeviceInfo();
-      // const authMethod = getAuthMethod(user);
       const darkMode = isDarkModeEnabled();
       const screenResolution = getScreenResolution();
 
@@ -186,9 +202,9 @@ export default function Page() {
         )[0],
         tokens: 0,
         email,
-        mno: getMNO(phoneNumber),
+        mno: getMNO(phoneNumber.withoutPrefix()),
         phone_number: caesarCipher(
-          phoneNumber,
+          phoneNumber.withoutPrefix(),
           Number(process.env.NEXT_PUBLIC_CIPHER_SHIFT!),
           "encode",
           true
@@ -226,6 +242,13 @@ export default function Page() {
         }
       }
 
+      localStorage.setItem(
+        "guideUser",
+        JSON.stringify({
+          id: user.uid,
+        })
+      );
+
       // Store welcome information
       localStorage.setItem(
         "welcomeNewUser",
@@ -235,9 +258,10 @@ export default function Page() {
         })
       );
 
-      router.push("/profile");
+      router.push("/my-profile");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));
+      setModalVisible(false);
     } finally {
       setIsRegisterLoading(false);
     }
@@ -275,7 +299,7 @@ export default function Page() {
       await signInWithEmailAndPassword(auth, userDetails.email, password);
 
       // Successful login
-      router.push("/profile");
+      router.push("/my-profile");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));
     } finally {
@@ -334,7 +358,7 @@ export default function Page() {
                   placeholder=" "
                 />
                 <label htmlFor="login-username" className={styles.login__label}>
-                  Username
+                  Your Username
                 </label>
               </div>
             </div>
@@ -356,7 +380,7 @@ export default function Page() {
                   placeholder=" "
                 />
                 <label htmlFor="login-pass" className={styles.login__label}>
-                  Password
+                  Your Password
                 </label>
 
                 {showPassword ? (
@@ -429,6 +453,33 @@ export default function Page() {
         <form ref={formRef} onSubmit={register} className={styles.login__form}>
           <h1 className={styles.login__title}>Create new account.</h1>
           <div className={styles.login__content}>
+            {friend && (
+              <div className={styles.login__box}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className={styles.login__icon}
+                >
+                  <path d="M14 14.252V16.3414C13.3744 16.1203 12.7013 16 12 16C8.68629 16 6 18.6863 6 22H4C4 17.5817 7.58172 14 12 14C12.6906 14 13.3608 14.0875 14 14.252ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11ZM18 17V14H20V17H23V19H20V22H18V19H15V17H18Z" />
+                </svg>
+
+                <div className={styles.login__boxInput}>
+                  <input
+                    type="text"
+                    className={styles.login__input}
+                    id="invite"
+                    placeholder=" "
+                    defaultValue={friend?.username}
+                    readOnly
+                  />
+
+                  <label htmlFor="invite" className={styles.login__label}>
+                    Your Friend
+                  </label>
+                </div>
+              </div>
+            )}
             <div className={styles.login__box} id="phone-box">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -470,7 +521,7 @@ export default function Page() {
                 />
 
                 <label htmlFor="register-phone" className={styles.login__label}>
-                  Phone Number
+                  Your Phone Number
                 </label>
               </div>
             </div>
@@ -497,7 +548,7 @@ export default function Page() {
                   }}
                 />
                 <label htmlFor="register-email" className={styles.login__label}>
-                  Email
+                  Your Email
                 </label>
               </div>
             </div>
@@ -519,7 +570,7 @@ export default function Page() {
                   placeholder=" "
                 />
                 <label htmlFor="register-pass" className={styles.login__label}>
-                  Password
+                  Your Password
                 </label>
 
                 {showPassword ? (

@@ -25,12 +25,12 @@ export default function Page() {
                 <span>INVITING FRIENDS!</span>
               </h1>
 
-              <a href="/profile" className={styles.button}>
+              <a href="/my-profile" className={styles.button}>
                 Start Earning Now{" "}
               </a>
 
               <img
-                src="/block-9.svg"
+                src="/logo-big.png"
                 alt="image"
                 className={styles.home__image}
               />
@@ -157,7 +157,7 @@ export default function Page() {
             START SHARING NOW <span>AND GET REWARDED</span>
           </h2>
           {/* <img src="/block-12.svg" alt="image" className={styles.faq__image1} /> */}
-          <img src="/block-24.svg" alt="image" className={styles.faq__image2} />
+          <img src="/logo-big.png" alt="image" className={styles.faq__image2} />
           <div
             className={`${styles.faq__container} ${styles.container} ${styles.grid}`}
           >

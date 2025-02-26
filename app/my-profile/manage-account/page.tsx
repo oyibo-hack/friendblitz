@@ -3,7 +3,6 @@
 
 import styles from "../../page.module.css";
 import { auth, db } from "@/app/firebase";
-import Contact from "@/components/contact";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { useUser } from "@/lib/hooks/use-user";
@@ -126,8 +125,7 @@ function ManageAccount() {
             </article>
           </div>
         </section>
-        {/*==================== CONTACT ====================*/}
-        <Contact />
+        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
       {/*==================== FOOTER ====================*/}
       <Footer />

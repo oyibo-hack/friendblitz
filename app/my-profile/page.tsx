@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import Contact from "@/components/contact";
 import styles from "../page.module.css";
 import { useUser } from "@/lib/hooks/use-user";
 import { convertBundle, getMNO, tokensManager, VTUService } from "@/lib/utils";
@@ -9,68 +8,198 @@ import { toast } from "sonner";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 
+const guide = {
+  intro:
+    "How to Use Your Profile 🚀\nHey there! Let’s go step by step on how to make the most of your profile.",
+  steps: [
+    {
+      title: "Share Your Invite Link",
+      description:
+        "Click the Share button to copy your unique invite link or share it directly with friends.",
+      action: "Next",
+    },
+    {
+      title: "Claim Your Rewards",
+      description:
+        "Go to the Rewards section to view unredeemed invites and claim bonuses like data or airtime.",
+      action: "Next",
+    },
+    {
+      title: "Track Your Friends",
+      description:
+        "Check the Friends section to see who has joined using your invite link and track their status.",
+      action: "Next",
+    },
+    {
+      title: "Check & Use Your Tokens",
+      description:
+        "View your token balance in the Tokens section and trade tokens for airtime or data.",
+      action: "Next",
+    },
+    {
+      title: "Play & Earn More Tokens",
+      description:
+        "Head over to the Puzzle section to play games and collect extra tokens.",
+      action: "Next",
+    },
+    {
+      title: "Complete Challenges",
+      description:
+        "Visit the Challenges section to complete tasks and earn bonus tokens.",
+      action: "Next",
+    },
+    {
+      title: "Manage Your Account",
+      description:
+        "In the Manage Account section, you can update settings, log out, or delete your account anytime.",
+      action: "Next",
+    },
+    {
+      title: "You’re All Set!",
+      description:
+        "Congrats! You now know how to use all the features of your profile. Start inviting friends and earning rewards!",
+      action: "Done",
+    },
+  ],
+};
+
 export default function Page() {
   const { user, friends, loading, error } = useUser("current");
 
-  const [modalVisible, setModalVisible] = useState(false);
-
   const [bundleCode, setBundleCode] = useState("");
-
-  const [rewardLoading, setRewardLoading] = useState(false);
 
   // Identify the Mobile Network Operator (MNO) from the decoded phone number
   const network = user?.phone_number ? getMNO(user.phone_number) : "Unknown";
 
-  // Effect to handle welcome modal on first load
-  useEffect(() => {
-    const newUserData = localStorage.getItem("welcomeNewUser");
-    if (!newUserData) {
-      setModalVisible(false);
-    } else {
-      const { isNewUser, bundleCode } = JSON.parse(newUserData); // Parse and extract `bundleCode`
-      if (isNewUser && bundleCode) {
-        setModalVisible(true);
-        setBundleCode(bundleCode);
-      }
-    }
-  }, []);
+  const claimWelcomeReward = async (providedBundleCode: string) => {
+    const vtuService = new VTUService();
+    // Use the parameter or fall back to state if not provided
+    const codeToUse = providedBundleCode || bundleCode;
 
-  const claimWelcomeReward = async () => {
-    try {
-      if (!user || !bundleCode) return;
+    if (user && codeToUse) {
+      try {
+        toast.promise(
+          async () => {
+            try {
+              // Check if the system balance is sufficient for the transaction
+              const isValid = await vtuService.isBalanceValidForUse();
+              if (!isValid) {
+                throw new Error(
+                  "The system is under too much load. Please try again later."
+                );
+              }
 
-      const vtuService = new VTUService();
+              // Top up data if the network is known
+              if (network !== "Unknown") {
+                await vtuService.topUpData(
+                  user.phone_number,
+                  network,
+                  codeToUse
+                );
+              }
 
-      // Check if the system balance is sufficient for the transaction
-      const isValid = await vtuService.isBalanceValidForUse();
-      if (isValid) {
-        // Top up data if the network is known
-        if (network != "Unknown") {
-          await vtuService.topUpData(user.phone_number, network, bundleCode);
-        }
+              // Add tokens to the user
+              await tokensManager("add", {
+                userId: user.id,
+                tokens: 10,
+              });
 
-        // Add tokens to the user
-        await tokensManager("add", {
-          userId: user.id,
-          tokens: 10,
-        });
+              // Remove the key from localStorage
+              localStorage.removeItem("welcomeNewUser");
 
-        setModalVisible(false);
-        // Remove the key from localStorage
-        localStorage.removeItem("welcomeNewUser");
-
-        toast.success("Reward claimed!");
-      } else {
-        throw new Error(
-          "The system is under too much load. Please try again later."
+              return "Reward claimed!"; // Return success message for toast
+            } catch (error) {
+              console.error(error);
+              throw error; // Ensure the error message is properly caught by toast
+            }
+          },
+          {
+            loading: "Loading...",
+            success: (msg) => msg, // Use the returned success message
+            error: (err) =>
+              err.message || "An error occurred while claiming the reward.",
+          }
         );
+      } catch (error) {
+        console.error("Error claiming reward:", error);
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setRewardLoading(false); // Ensure loading is turned off in all cases
+    } else {
+      toast.error("An error occurred");
     }
   };
+
+  // Effect to handle welcome modal on first load
+  useEffect(() => {
+    if (!user) return;
+
+    const newUserData = localStorage.getItem("welcomeNewUser");
+    if (newUserData) {
+      const { isNewUser, bundleCode } = JSON.parse(newUserData);
+      if (isNewUser && bundleCode) {
+        // Update state first
+        setBundleCode(bundleCode);
+
+        // Create a closure that captures the current bundleCode value
+        const claimWithCurrentBundle = () => {
+          claimWelcomeReward(bundleCode); // Pass bundleCode directly as parameter
+        };
+
+        toast.message(`Welcome, ${user.username}!`, {
+          description: `You have 10 tokens and just received
+            ${network !== "Unknown" && convertBundle(network, bundleCode)}`,
+          action: {
+            label: "Claim",
+            onClick: claimWithCurrentBundle, // Use the closure function
+          },
+          duration: 30000,
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, network]);
+
+  const showSteps = (index: number): void => {
+    if (index < guide.steps.length) {
+      const step = guide.steps[index];
+
+      toast.message(step.title, {
+        description: step.description,
+        action: {
+          label: step.action,
+          onClick: () => {
+            if (index === guide.steps.length - 1) {
+              localStorage.removeItem("guide-user"); // Remove guide when last step is clicked
+            }
+            showSteps(index + 1);
+          },
+        },
+        duration: 30000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!user) return;
+
+    const guideUser = localStorage.getItem("guideUser");
+    const welcomeUser = localStorage.getItem("welcomeNewUser");
+
+    // Show welcome message if guide-user exists but welcomeNewUser does not
+    if (guideUser && !welcomeUser) {
+      const { id } = JSON.parse(guideUser);
+      if (id) {
+        toast.message("Welcome!", {
+          description: guide?.intro || "Let's get started!",
+          action: {
+            label: "Start",
+            onClick: () => showSteps(0),
+          },
+          duration: 30000,
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   if (loading) {
     return <h2 className={styles.section__title}>Loading...</h2>;
@@ -99,12 +228,12 @@ export default function Page() {
           >
             <article className={`${styles.widget__card} animated-bounce-twice`}>
               <img
-                src="/block-20.svg"
+                src="/logo-big.png"
                 alt="image"
                 className={styles.widget__img}
               />
               <p className={styles.widget__description}>
-                <span>Invite & Earn Rewards</span>
+                <span>Share</span>
                 Copy your unique invite link to share with friends
               </p>
               <button
@@ -115,7 +244,8 @@ export default function Page() {
 
                   const link = `${location.origin}/join?friend=${user.username
                     .split(" ")
-                    .join("-")}`;
+                    .join("-")
+                    .toLowerCase()}`;
 
                   if (navigator.share) {
                     // Use navigator.share if available
@@ -165,7 +295,7 @@ export default function Page() {
                 View unredeemed invites and claim rewards like data or airtime.
               </p>
               <a
-                href="/profile/rewards"
+                href="/my-profile/rewards"
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -190,7 +320,7 @@ export default function Page() {
                 See all your friends and track your invites.
               </p>
               <a
-                href="/profile/your-friends"
+                href="/my-profile/your-friends"
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -215,7 +345,7 @@ export default function Page() {
                 Check your token balance and trade tokens for airtime or data.
               </p>
               <a
-                href="/profile/your-tokens"
+                href="/my-profile/your-tokens"
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -240,7 +370,7 @@ export default function Page() {
                 Play puzzle games to collect more tokens!
               </p>
               <a
-                href="/profile/puzzle"
+                href="/my-profile/puzzle"
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -265,7 +395,7 @@ export default function Page() {
                 Finish challenges to earn extra tokens.
               </p>
               <a
-                href="/profile/challenges"
+                href="/my-profile/challenges"
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -290,7 +420,7 @@ export default function Page() {
                 Delete or log out of your account anytime.
               </p>
               <a
-                href="/profile/manage-account"
+                href="/my-profile/manage-account"
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -306,63 +436,10 @@ export default function Page() {
             </article>
           </div>
         </section>
-
-        {/*==================== CONTACT ====================*/}
-        <Contact />
+        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
       {/*==================== FOOTER ====================*/}
       <Footer />
-      {/*==================== MODAL ====================*/}
-      <div className={`modal ${modalVisible ? "activeModal" : ""}`}>
-        <div className="modal__container">
-          <article className={styles.block__card}>
-            <img
-              src="/block-23.svg"
-              alt="image"
-              className={styles.block__img}
-            />
-            <h3 className={styles.block__title}>Welcome, {user.username}!</h3>
-            <span className={styles.block__info}></span>
-            <p className={styles.block__description}>
-              You have 10 tokens and just received{" "}
-              {network !== "Unknown" && convertBundle(network, bundleCode)}
-            </p>
-            <button
-              type="button"
-              disabled={rewardLoading}
-              className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
-              onClick={claimWelcomeReward}
-            >
-              {rewardLoading ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width={24}
-                  height={24}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={3.5}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="animate-spin"
-                >
-                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  width={24}
-                  height={24}
-                >
-                  <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
-                </svg>
-              )}
-            </button>
-          </article>
-        </div>
-      </div>
     </div>
   );
 }

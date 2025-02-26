@@ -2,7 +2,6 @@
 "use client";
 import Header from "@/components/header";
 import styles from "../../page.module.css";
-import Contact from "@/components/contact";
 import Footer from "@/components/footer";
 import { toast } from "sonner";
 
@@ -102,8 +101,7 @@ function Puzzle() {
             </article>
           </div>
         </section>
-        {/*==================== CONTACT ====================*/}
-        <Contact />
+        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
       {/*==================== FOOTER ====================*/}
       <Footer />

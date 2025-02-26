@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cherry_Bomb_One, Figtree } from "next/font/google";
+import { Cherry_Bomb_One, Outfit } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import ScrollUp from "@/components/scroll-up";
@@ -7,7 +7,7 @@ import Script from "next/script";
 // import Popup from "@/components/popup";
 import { PROD_URL } from "@/lib/constant";
 
-const figtree = Figtree({
+const outfit = Outfit({
   variable: "--body-font",
   weight: ["400", "500", "600"],
   subsets: ["latin"],
@@ -62,7 +62,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${figtree.variable} ${cherryBombOne.variable}`}>
+      <body className={`${outfit.variable} ${cherryBombOne.variable}`}>
         {children}
         {/* Google Analytics */}
         <Script
@@ -82,13 +82,14 @@ export default function RootLayout({
             `,
           }}
         />
-        {/* <Popup routes={["/", "/profile", "/free-points"]} /> */}
+        {/* <Popup routes={["/", "/my-profile", "/free-points"]} /> */}
         <ScrollUp />
         <Toaster
           position="top-center"
           closeButton
           richColors
-          toastOptions={{ className: `${figtree.className}` }}
+          // expand={true}
+          toastOptions={{ className: `${outfit.className}` }}
         />
       </body>
     </html>
