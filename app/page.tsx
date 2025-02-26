@@ -53,62 +53,46 @@ export default function Page() {
             <h2 className={styles.section__title}>
               HOW IT <span>WORKS</span>
             </h2>
-            <div className={`${styles.block__swiper} swiper`}>
-              <div className="swiper-wrapper">
-                <article className={`${styles.block__card} swiper-slide`}>
-                  <img
-                    src="/block-15.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Share Your Link</h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    Drop your unique referral link on Instagram, WhatsApp,
-                    TikTok, or anywhere.
-                  </p>
-                </article>
-                <article className={`${styles.block__card} swiper-slide`}>
-                  <img
-                    src="/block-16.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>They Sign Up</h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    When your friends join, you both score rewards.
-                  </p>
-                </article>
-                <article className={`${styles.block__card} swiper-slide`}>
-                  <img
-                    src="/block-2.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>Get Paid</h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    You and your friends instantly get free airtime, data, and
-                    SMS!
-                  </p>
-                </article>
-                <article className={`${styles.block__card} swiper-slide`}>
-                  <img
-                    src="/block-17.svg"
-                    alt="image"
-                    className={styles.block__img}
-                  />
-                  <h3 className={styles.block__title}>No Catch</h3>
-                  <span className={styles.block__info}></span>
-                  <p className={styles.block__description}>
-                    Enjoy the freebies—no strings attached!
-                  </p>
-                </article>
-              </div>
+            <div className={`${styles.block__content} ${styles.grid}`}>
+              <article className={styles.block__card}>
+                <img
+                  src="/block-15.svg"
+                  alt="image"
+                  className={styles.block__img}
+                />
+                <h3 className={styles.block__title}>Share Your Link</h3>
+                <span className={styles.block__info}></span>
+                <p className={styles.block__description}>
+                  Drop your unique referral link on Instagram, WhatsApp, TikTok,
+                  or anywhere.
+                </p>
+              </article>
+              <article className={styles.block__card}>
+                <img
+                  src="/block-16.svg"
+                  alt="image"
+                  className={styles.block__img}
+                />
+                <h3 className={styles.block__title}>They Sign Up</h3>
+                <span className={styles.block__info}></span>
+                <p className={styles.block__description}>
+                  When your friends join, you both score rewards.
+                </p>
+              </article>
+              <article className={styles.block__card}>
+                <img
+                  src="/block-2.svg"
+                  alt="image"
+                  className={styles.block__img}
+                />
+                <h3 className={styles.block__title}>Get Paid</h3>
+                <span className={styles.block__info}></span>
+                <p className={styles.block__description}>
+                  You and your friends instantly get free airtime, data, and
+                  SMS!
+                </p>
+              </article>
             </div>
-            {/* Pagination */}
-            <div className="swiper-pagination" />
           </div>
         </section>
         {/*==================== EXPLORE ====================*/}
@@ -127,7 +111,7 @@ export default function Page() {
                 your crew. Start sharing and start earning today!
               </p>
               <img
-                src="/block-9.svg"
+                src="/logo-big.png"
                 alt="image"
                 className={styles.explore__planet}
               />
@@ -162,7 +146,11 @@ export default function Page() {
             className={`${styles.faq__container} ${styles.container} ${styles.grid}`}
           >
             <article className={styles.faq__card}>
-              <img src="/block-8.svg" alt="image" className={styles.faq__img} />
+              <img
+                src="/block-20.svg"
+                alt="image"
+                className={styles.faq__img}
+              />
               <p className={styles.faq__description}>
                 <span>How many friends can I refer?</span>
                 There’s no limit! Invite as many friends as you want and get

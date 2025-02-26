@@ -251,8 +251,12 @@
   padding: 2rem 2rem 5rem;
 }
 
-.block__swiper {
+.block__content {
   padding-top: 3rem;
+  position: relative;
+  row-gap: 3rem;
+  grid-template-columns: 265px;
+  justify-content: center;
 }
 
 .block__card {
@@ -622,6 +626,7 @@
     order: -1;
   }
 
+  .block__content,
   .faq__container,
   .widget__container {
     grid-template-columns: repeat(2, 265px);
@@ -761,6 +766,7 @@
     right: -4rem;
   }
 
+  .block__content,
   .faq__container,
   .widget__container {
     grid-template-columns: repeat(3, 265px);

@@ -10,42 +10,6 @@ function Header() {
 
   const pathname = usePathname();
 
-  // SWIPER
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src =
-      "https://cdn.jsdelivr.net/npm/swiper@11.2.2/swiper-bundle.min.js";
-    script.async = true;
-
-    script.onload = () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const Swiper = (window as any).Swiper;
-      if (Swiper) {
-        new Swiper(".swiper", {
-          loop: true,
-          spaceBetween: 32,
-          grabCursor: true,
-          slidesPerView: "auto",
-          // centeredSlides: "auto",
-          pagination: {
-            el: ".swiper-pagination",
-            clickable: true,
-          },
-          breakpoints: {
-            600: { slidesPerView: 2 },
-            900: { slidesPerView: 3 },
-          },
-        });
-      }
-    };
-
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
   // SCROLL REVEAL ANIMATION
   useEffect(() => {
     const script = document.createElement("script");
@@ -66,7 +30,7 @@ function Header() {
         });
 
         sr.reveal(
-          `.${styles.home__data}, .${styles.block__swiper}, .${styles.widget__container}, .${styles.contact__container}`
+          `.${styles.home__data}, .${styles.block__content}, .${styles.widget__container}, .${styles.contact__container}`
         );
         sr.reveal(`.${styles.home__img}`, { origin: "bottom" });
         sr.reveal(`.${styles.home__image}`, { delay: 800 });
@@ -173,7 +137,7 @@ function Header() {
           <ul className={styles.nav__lists}>
             {[
               { href: "/", label: "Home" },
-              { href: "/profile", label: "My Profile" },
+              { href: "/my-profile", label: "My Profile" },
               { href: "/#how-it-works", label: "How it works" },
               { href: "/free-tokens", label: "Free Tokens" },
               { href: "/profile/challenges", label: "Challenges" },
@@ -202,7 +166,7 @@ function Header() {
               <path d="M10.5859 12L2.79297 4.20706L4.20718 2.79285L12.0001 10.5857L19.793 2.79285L21.2072 4.20706L13.4143 12L21.2072 19.7928L19.793 21.2071L12.0001 13.4142L4.20718 21.2071L2.79297 19.7928L10.5859 12Z" />
             </svg>
           </div>
-          <img src="/block-22.svg" alt="image" className={styles.nav__img} />
+          <img src="/logo-big.png" alt="image" className={styles.nav__img} />
         </div>
         {/* Toggle Button */}
         <div id="nav-toggle" onClick={toggleMenu}>
