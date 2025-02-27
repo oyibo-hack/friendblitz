@@ -88,7 +88,7 @@ export default function Page() {
           >
             <article className={styles.widget__card}>
               <img
-                src="/logo-big.png"
+                src="/block-17.svg"
                 alt="image"
                 className={styles.widget__img}
               />

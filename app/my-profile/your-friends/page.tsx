@@ -82,7 +82,11 @@ function YourFriends() {
                       className={styles.widget__img}
                     />
                     <p className={styles.widget__description}>
-                      <span>{friend.username} - Rewarded 🎉</span>
+                      <span>
+                        {`( ${friendLists.indexOf(friend) + 1} ). ${
+                          friend.username
+                        }`}
+                      </span>
                       {moment(friend.created_at, "YYYYMMDD").fromNow()}
                     </p>
                   </article>

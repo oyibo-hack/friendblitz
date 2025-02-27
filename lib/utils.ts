@@ -509,7 +509,7 @@ export function getVTUReward(
       "airtel",
       {
         airtime: [300, 500, 300, 100, 300, 500, 300, 300, 300, 500, 100],
-        data: ["AIRTEL1GB", "airt-550", "AIRTEL1GB", "AIRTEL1GB", "AIRTEL1GB"],
+        data: ["AIRTEL1GB", "AIRTEL500MB", "AIRTEL1GB", "AIRTEL1GB", "AIRTEL500MB"],
       },
     ],
     [
@@ -553,11 +553,10 @@ export function convertBundle(
     mtn: {
       "500": "500MB",
       M1024: "1GB",
-      M2024: "2GB",
     },
     airtel: {
       AIRTEL1GB: "1GB",
-      "airt-550": "750MB",
+      "AIRTEL500MB": "500MB",
     },
     glo: {
       glo100x: "1GB",

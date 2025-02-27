@@ -35,7 +35,7 @@ function Footer() {
 
           <div className={styles.footer__social}>
             <a
-              href="https://facebook.com"
+              href="https://facebook.com/friendblitz"
               target="_blank"
               rel="noopener"
               title="facebook"
