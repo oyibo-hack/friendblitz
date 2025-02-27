@@ -67,7 +67,7 @@ export default function Page() {
   const { user, friends, loading, error } = useUser("current");
 
   const [bundleCode, setBundleCode] = useState("");
-  const [rewardClaimed, setRewardClaimed] = useState(false); // Track if reward is already claimed
+  const [rewardClaimed, setRewardClaimed] = useState(true); // Track if reward is already claimed
 
   // Identify the Mobile Network Operator (MNO) from the decoded phone number
   const network = user?.phone_number ? getMNO(user.phone_number) : "Unknown";
@@ -146,22 +146,23 @@ export default function Page() {
       const { isNewUser, bundleCode } = JSON.parse(newUserData);
       if (isNewUser && bundleCode) {
         setBundleCode(bundleCode); // Set the state first
+        setRewardClaimed(false);
       }
     }
   }, [user]);
 
   useEffect(() => {
-    if (!bundleCode || !user || rewardClaimed) return; // ✅ Prevent toast if already claimed
-
-    toast.message(`Welcome, ${user.username}!`, {
-      description: `You have 10 tokens and just received 
-        ${network !== "Unknown" ? convertBundle(network, bundleCode) : ""}`,
-      action: {
-        label: "Claim",
-        onClick: () => claimWelcomeReward(bundleCode),
-      },
-      duration: 30000,
-    });
+    if (bundleCode && user && !rewardClaimed) {
+      toast.message(`Welcome, ${user.username}!`, {
+        description: `You have 10 tokens and just received 
+          ${network !== "Unknown" ? convertBundle(network, bundleCode) : ""}`,
+        action: {
+          label: "Claim",
+          onClick: () => claimWelcomeReward(bundleCode),
+        },
+        duration: 30000,
+      });
+    }
   }, [bundleCode, network, user, claimWelcomeReward, rewardClaimed]); // ✅ Added rewardClaimed
 
   const showSteps = useCallback((index: number): void => {
@@ -224,9 +225,7 @@ export default function Page() {
       <main className={styles.main}>
         {/*==================== WIDGET ====================*/}
         <section className={`${styles.widget} ${styles.section}`} id="widget">
-          <h2 className={styles.section__title}>
-            You are {user.username}
-          </h2>
+          <h2 className={styles.section__title}>Hi, {user.username}</h2>
           <div
             className={`${styles.widget__container} ${styles.container} ${styles.grid}`}
           >
