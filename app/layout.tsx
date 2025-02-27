@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import ScrollUp from "@/components/scroll-up";
 import Script from "next/script";
-// import Popup from "@/components/popup";
+import Popup from "@/components/popup";
 import { PROD_URL } from "@/lib/constant";
 
 const outfit = Outfit({
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     default: "Friend Blitz - Let's Make Friends", // a default is required when creating a template
   },
   description:
-    "Invite your friends to join, and get up to 10GB of free data, airtime, and SMS credits! Start earning now with our easy referral program.",
+    "Your easy side hustle! Earn free airtime, SMS, and up to 10GB of data just by inviting friends. No pressure, just rewards. Start earning today!",
   metadataBase: new URL(PROD_URL),
   alternates: {
     canonical: "/",
@@ -36,8 +36,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Friend Blitz",
     description:
-      "Invite your friends to join, and get up to 10GB of free data, airtime, and SMS credits! Start earning now with our easy referral program.",
-    url: PROD_URL,
+      "Your easy side hustle! Earn free airtime, SMS, and up to 10GB of data just by inviting friends. No pressure, just rewards. Start earning today!",
+    url: "/",
     siteName: "Friend Blitz",
     locale: "en_US",
     type: "website",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Friend Blitz",
     description:
-      "Invite your friends to join, and get up to 10GB of free data, airtime, and SMS credits! Start earning now with our easy referral program.",
+      "Your easy side hustle! Earn free airtime, SMS, and up to 10GB of data just by inviting friends. No pressure, just rewards. Start earning today!",
     creator: "@friend-blitz",
   },
 };
@@ -82,13 +82,13 @@ export default function RootLayout({
             `,
           }}
         />
-        {/* <Popup routes={["/", "/my-profile", "/free-points"]} /> */}
+        <Popup routes={["/", "/my-profile", "/free-points"]} />
         <ScrollUp />
         <Toaster
           position="top-center"
           closeButton
           richColors
-          // expand={true}
+          expand={true}
           toastOptions={{ className: `${outfit.className}` }}
         />
       </body>

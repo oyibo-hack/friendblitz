@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Friend Blitz",
     short_name: "Friendblitz",
     description:
-      "Invite your friends to join, and get up to 10GB of free data, airtime, and SMS credits! Start earning now with our easy referral program.",
+      "Your easy side hustle! Earn free airtime, SMS, and up to 10GB of data just by inviting friends. No pressure, just rewards. Start earning today!",
     start_url: "/",
     display: "standalone",
     background_color: "#fff",
