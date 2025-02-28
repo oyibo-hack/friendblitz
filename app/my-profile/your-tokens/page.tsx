@@ -1,13 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Header from "@/components/header";
+import Navbar from "@/components/navbar";
 import styles from "../../page.module.css";
 import { useUser } from "@/lib/hooks/use-user";
 import { getMNO, tokensManager, VTUService } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
-import Footer from "@/components/footer";
 
 function YourTokens() {
   const { user, loading, error } = useUser(); // Fetch current user data
@@ -174,7 +173,7 @@ function YourTokens() {
   return (
     <div>
       {/*==================== HEADER ====================*/}
-      <Header />
+      <Navbar />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
         {/*==================== WIDGET ====================*/}
@@ -316,10 +315,7 @@ function YourTokens() {
             </article>
           </div>
         </section>
-        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
-      {/*==================== FOOTER ====================*/}
-      <Footer />
     </div>
   );
 }

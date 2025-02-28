@@ -33,6 +33,54 @@
   overflow: hidden;
 }
 
+/*=============== BOTTOM NAVBAR ===============*/
+.bottom__nav {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  background: var(--first-gradient);
+  width: 88%;
+  margin-inline: auto;
+  box-shadow: 0 8px 32px hsla(243, 100%, 54%, 0.4);
+  padding: 1rem 1.75rem;
+  /* border-radius: 4rem; */
+  z-index: var(--z-fixed);
+}
+
+.bottom__nav__list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bottom__nav__link {
+  color: var(--text-color);
+  width: 1.5rem;
+  transition: color 0.4s;
+  cursor: pointer;
+}
+
+.bottom__nav__link img {
+  width: 3rem;
+}
+
+.bottom__nav__link span {
+  font-size: var(--small-font-size);
+}
+
+.bottom__nav__link:hover {
+  color: var(--white-color);
+}
+
+/*=============== BREAKPOINTS ===============*/
+/* For medium devices */
+@media screen and (min-width: 450px) {
+  .bottom__nav {
+    width: 350px;
+  }
+}
+
 /*=============== HEADER & NAV ===============*/
 .header {
   position: fixed;

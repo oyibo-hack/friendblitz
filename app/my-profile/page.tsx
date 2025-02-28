@@ -5,10 +5,9 @@ import { useUser } from "@/lib/hooks/use-user";
 import { convertBundle, getMNO, tokensManager, VTUService } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import Footer from "@/components/footer";
-import Header from "@/components/header";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import Navbar from "@/components/navbar";
 
 const guide = {
   intro:
@@ -224,7 +223,7 @@ export default function Page() {
   return (
     <div>
       {/*==================== HEADER ====================*/}
-      <Header />
+      <Navbar />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
         {/*==================== WIDGET ====================*/}
@@ -445,10 +444,7 @@ export default function Page() {
             </article>
           </div>
         </section>
-        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
-      {/*==================== FOOTER ====================*/}
-      <Footer />
     </div>
   );
 }

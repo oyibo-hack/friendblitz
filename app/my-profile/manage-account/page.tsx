@@ -3,8 +3,7 @@
 
 import styles from "../../page.module.css";
 import { auth, db } from "@/app/firebase";
-import Footer from "@/components/footer";
-import Header from "@/components/header";
+import Navbar from "@/components/navbar";
 import { useUser } from "@/lib/hooks/use-user";
 import { deleteDoc, doc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
@@ -62,7 +61,7 @@ function ManageAccount() {
   return (
     <div>
       {/*==================== HEADER ====================*/}
-      <Header />
+      <Navbar user={user} />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
         {/*==================== WIDGET ====================*/}
@@ -125,10 +124,7 @@ function ManageAccount() {
             </article>
           </div>
         </section>
-        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
-      {/*==================== FOOTER ====================*/}
-      <Footer />
     </div>
   );
 }

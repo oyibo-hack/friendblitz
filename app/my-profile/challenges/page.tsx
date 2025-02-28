@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import Header from "@/components/header";
+import Navbar from "@/components/navbar";
 import styles from "../../page.module.css";
 import { useUser } from "@/lib/hooks/use-user";
 import {
@@ -11,7 +11,6 @@ import {
 } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import Footer from "@/components/footer";
 
 function Challenges() {
   const { user, loading, error } = useUser(); // Fetch current user data
@@ -98,7 +97,7 @@ function Challenges() {
   return (
     <div>
       {/*==================== HEADER ====================*/}
-      <Header />
+      <Navbar user={user} />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
         {/*==================== WIDGET ====================*/}
@@ -158,10 +157,7 @@ function Challenges() {
             ))}
           </div>
         </section>
-        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
-      {/*==================== FOOTER ====================*/}
-      <Footer />
     </div>
   );
 }

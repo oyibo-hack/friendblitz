@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import Header from "@/components/header";
 import styles from "../../page.module.css";
 import { useUser } from "@/lib/hooks/use-user";
 import {
@@ -13,7 +12,7 @@ import {
 } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import Footer from "@/components/footer";
+import Navbar from "@/components/navbar";
 
 type FriendWithUsername = Friend & { username: string };
 function Rewards() {
@@ -130,7 +129,7 @@ function Rewards() {
   return (
     <div>
       {/*==================== HEADER ====================*/}
-      <Header />
+      <Navbar />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
         {/*==================== WIDGET ====================*/}
@@ -197,10 +196,7 @@ function Rewards() {
             })}
           </div>
         </section>
-        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
-      {/*==================== FOOTER ====================*/}
-      <Footer />
     </div>
   );
 }

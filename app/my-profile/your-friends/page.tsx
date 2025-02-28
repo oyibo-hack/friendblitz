@@ -5,8 +5,7 @@ import { useUser } from "@/lib/hooks/use-user";
 import { type Friend, manageUserFriends, type User } from "@/lib/utils";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
+import Navbar from "@/components/navbar";
 
 type FriendWithUsername = Friend & { username: string };
 function YourFriends() {
@@ -56,7 +55,7 @@ function YourFriends() {
   return (
     <div>
       {/*==================== HEADER ====================*/}
-      <Header />
+      <Navbar />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
         {/*==================== WIDGET ====================*/}
@@ -95,10 +94,7 @@ function YourFriends() {
             )}
           </div>
         </section>
-        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
-      {/*==================== FOOTER ====================*/}
-      <Footer />
     </div>
   );
 }

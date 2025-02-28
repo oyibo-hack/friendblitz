@@ -1,15 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import Header from "@/components/header";
 import styles from "../../page.module.css";
-import Footer from "@/components/footer";
 import { toast } from "sonner";
+import Navbar from "@/components/navbar";
 
 function Puzzle() {
   return (
     <div>
       {/*==================== HEADER ====================*/}
-      <Header />
+      <Navbar />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
         {/*==================== WIDGET ====================*/}
@@ -101,10 +100,7 @@ function Puzzle() {
             </article>
           </div>
         </section>
-        <hr className={styles.container} style={{ marginBlock: "5rem" }} />
       </main>
-      {/*==================== FOOTER ====================*/}
-      <Footer />
     </div>
   );
 }

@@ -231,11 +231,17 @@ img {
   4%,
   10%,
   14%,
+  50%,
+  54%,
+  60%,
+  64%,
   100% {
     transform: translateY(0);
   }
   2%,
-  8% {
+  8%,
+  52%,
+  58% {
     transform: translateY(-20px);
   }
 }
