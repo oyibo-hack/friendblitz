@@ -509,7 +509,13 @@ export function getVTUReward(
       "airtel",
       {
         airtime: [300, 500, 300, 100, 300, 500, 300, 300, 300, 500, 100],
-        data: ["AIRTEL1GB", "AIRTEL500MB", "AIRTEL1GB", "AIRTEL1GB", "AIRTEL500MB"],
+        data: [
+          "AIRTEL1GB",
+          "AIRTEL500MB",
+          "AIRTEL1GB",
+          "AIRTEL1GB",
+          "AIRTEL500MB",
+        ],
       },
     ],
     [
@@ -556,7 +562,7 @@ export function convertBundle(
     },
     airtel: {
       AIRTEL1GB: "1GB",
-      "AIRTEL500MB": "500MB",
+      AIRTEL500MB: "500MB",
     },
     glo: {
       glo100x: "1GB",
@@ -577,11 +583,33 @@ export function convertBundle(
 
 // Define the User type
 export interface User {
+  country: string; // 🌍 User's country
+  device_info: {
+    os: string;
+    browser: string;
+    model: string;
+    screen_resolution: string;
+    is_mobile: boolean;
+  };
+  isNewUser: {
+    isClaimed: boolean; // Boolean property to track if bundle code is claimed
+    bundleCode: string;
+    date: string;
+  };
+  ip_address: string;
   id: string;
   username: string;
-  email: string;
-  phone_number: string;
   tokens: number;
+  email: string;
+  mno: string;
+  phone_number: string;
+  timezone: string;
+  language: string;
+  is_dark_mode: boolean;
+  user_agent: string;
+  last_login: string;
+  login_method: string;
+  referrer: string;
   created_at: string;
 }
 

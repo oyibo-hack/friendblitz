@@ -82,7 +82,7 @@ export default function RootLayout({
             `,
           }}
         />
-        <Popup routes={["/", "/my-profile", "/free-points"]} />
+        <Popup routes={["/", "/my-profile/puzzle", "/free-points", "/rules", "/privacy-policy"]} />
         <ScrollUp />
         <Toaster
           position="top-center"

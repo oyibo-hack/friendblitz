@@ -194,6 +194,11 @@ export default function Page() {
           screen_resolution: screenResolution,
           is_mobile: /Mobi|Android/i.test(navigator.userAgent),
         },
+        isNewUser: {
+          isClaimed: false, // Boolean property to track if bundle code is claimed
+          bundleCode: getVTUReward(mno, "data"),
+          date: new Date().toISOString(),
+        },
         ip_address: userIP,
         id: user.uid,
         username: mergeUsername(
@@ -246,15 +251,6 @@ export default function Page() {
         "guideUser",
         JSON.stringify({
           id: user.uid,
-        })
-      );
-
-      // Store welcome information
-      localStorage.setItem(
-        "welcomeNewUser",
-        JSON.stringify({
-          isNewUser: true,
-          bundleCode: getVTUReward(mno, "data"),
         })
       );
 
@@ -620,7 +616,7 @@ export default function Page() {
             type="button"
             className={`${styles.login__button} ${styles.button} ${styles.button__yellow}`}
             onClick={() => setModalVisible(true)}
-            disabled={!isAgreed}
+            disabled={!isAgreed || !emailInput}
           >
             {isRegisterLoading && (
               <svg
@@ -658,7 +654,7 @@ export default function Page() {
 
             {ENABLE_PAYMENT ? (
               <h3 className={styles.block__title}>
-                Get a membership for ₦1200.
+                Get a membership for ₦2100.
               </h3>
             ) : (
               <h3 className={styles.block__title}>

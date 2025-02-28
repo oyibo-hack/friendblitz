@@ -33,7 +33,7 @@ function Puzzle() {
               </p>
               <a
                 // href="puzzle/tenzi"
-                onClick={() => toast.error("Something went wrong.")}
+                onClick={() => toast.error("Not available right now")}
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -59,7 +59,7 @@ function Puzzle() {
               </p>
               <a
                 // href="puzzle/hangman"
-                onClick={() => toast.error("Something went wrong.")}
+                onClick={() => toast.error("Not available right now")}
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg
@@ -85,7 +85,7 @@ function Puzzle() {
               </p>
               <a
                 // href="puzzle/tic-tac-toe"
-                onClick={() => toast.error("Something went wrong.")}
+                onClick={() => toast.error("Not available right now")}
                 className={`${styles.button} ${styles.button__yellow} ${styles.widget__button}`}
               >
                 <svg

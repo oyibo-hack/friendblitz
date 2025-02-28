@@ -7,6 +7,8 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const guide = {
   intro:
@@ -66,104 +68,105 @@ const guide = {
 export default function Page() {
   const { user, friends, loading, error } = useUser("current");
 
-  const [bundleCode, setBundleCode] = useState("");
-  const [rewardClaimed, setRewardClaimed] = useState(true); // Track if reward is already claimed
+  const [isClaimed, setIsClaimed] = useState(false);
 
   // Identify the Mobile Network Operator (MNO) from the decoded phone number
   const network = user?.phone_number ? getMNO(user.phone_number) : "Unknown";
 
   // Memoized function to claim the welcome reward
   const claimWelcomeReward = useCallback(
-    async (providedBundleCode?: string) => {
-      if (rewardClaimed) {
-        toast.error("Reward already claimed.");
+    async (bundleCode?: string) => {
+      const vtuService = new VTUService();
+
+      if (!user || !bundleCode) {
+        toast.error("An error occurred");
         return;
       }
 
-      const vtuService = new VTUService();
-      const codeToUse = providedBundleCode || bundleCode;
+      if (user.isNewUser.isClaimed === true) {
+        toast.error(`You've already claimed this reward!`);
+        return;
+      }
 
-      if (user && codeToUse) {
-        try {
-          toast.promise(
-            async () => {
-              try {
-                // Check system balance before proceeding
-                const isValid = await vtuService.isBalanceValidForUse();
-                if (!isValid) {
-                  throw new Error(
-                    "The system is under too much load. Please try again later."
-                  );
-                }
-
-                // Top up data if the network is valid
-                if (network !== "Unknown") {
-                  await vtuService.topUpData(
-                    user.phone_number,
-                    network,
-                    codeToUse
-                  );
-                }
-
-                // Add tokens to user account
-                await tokensManager("add", {
-                  userId: user.id,
-                  tokens: 10,
-                });
-
-                // Remove the welcome flag from local storage
-                localStorage.removeItem("welcomeNewUser");
-                setRewardClaimed(true); // ✅ Mark reward as claimed
-                return "Reward claimed!"; // Success message
-              } catch (error) {
-                console.error(error);
-                throw error;
-              }
-            },
-            {
-              loading: "Processing your reward...",
-              success: (msg) => msg,
-              error: (err) =>
-                err.message || "An error occurred while claiming the reward.",
+      try {
+        toast.promise(
+          async () => {
+            // Check system balance before proceeding
+            const isValid = await vtuService.isBalanceValidForUse();
+            if (!isValid) {
+              throw new Error(
+                "The system is under too much load. Please try again later."
+              );
             }
-          );
-        } catch (error) {
-          console.error("Error claiming reward:", error);
-        }
-      } else {
-        toast.error("An error occurred");
+
+            // Top up data if the network is valid
+            if (network !== "Unknown") {
+              await vtuService.topUpData(
+                user.phone_number,
+                network,
+                bundleCode
+              );
+            }
+
+            // Add tokens to user account
+            await tokensManager("add", {
+              userId: user.id,
+              tokens: 10,
+            });
+
+            // ✅ Update `isClaimed` in Firebase
+            const userRef = doc(db, "users", user.id);
+            await updateDoc(userRef, {
+              "isNewUser.isClaimed": true, // Mark as claimed
+              "isNewUser.date": new Date().toISOString(),
+            });
+
+            return "Reward claimed!"; // Success message
+          },
+          {
+            loading: "Loading...",
+            success: (msg) => msg,
+            error: (err) =>
+              err.message || "An error occurred while claiming the reward.",
+          }
+        );
+      } catch (error) {
+        console.error("Error claiming reward:", error);
       }
     },
-    [bundleCode, network, rewardClaimed, user] // Dependencies: re-creates only if any of these change
+    [network, user] // Dependencies: re-creates only if these change
   );
+
+  const handleClaimClick = useCallback(async () => {
+    if (!isClaimed && user?.isNewUser?.bundleCode) {
+      await claimWelcomeReward(user.isNewUser.bundleCode);
+      setIsClaimed(true);
+    }
+  }, [isClaimed, user, claimWelcomeReward]);
 
   // Effect to handle welcome modal on first load
   useEffect(() => {
-    if (!user) return;
+    if (!user?.isNewUser || user.isNewUser.isClaimed) return;
 
-    const newUserData = localStorage.getItem("welcomeNewUser");
-    if (newUserData) {
-      const { isNewUser, bundleCode } = JSON.parse(newUserData);
-      if (isNewUser && bundleCode) {
-        setBundleCode(bundleCode); // Set the state first
-        setRewardClaimed(false);
-      }
-    }
-  }, [user]);
+    const bundle =
+      network !== "Unknown"
+        ? convertBundle(network, user.isNewUser.bundleCode)
+        : "";
+    const description = `You have 10 tokens and just received ${bundle}`;
 
-  useEffect(() => {
-    if (bundleCode && user && !rewardClaimed) {
-      toast.message(`Welcome, ${user.username}!`, {
-        description: `You have 10 tokens and just received 
-          ${network !== "Unknown" ? convertBundle(network, bundleCode) : ""}`,
-        action: {
-          label: "Claim",
-          onClick: () => claimWelcomeReward(bundleCode),
-        },
-        duration: 30000,
-      });
-    }
-  }, [bundleCode, network, user, claimWelcomeReward, rewardClaimed]); // ✅ Added rewardClaimed
+    toast.message(`Welcome, ${user.username}!`, {
+      description,
+      action: isClaimed
+        ? {
+            label: "Claim",
+            onClick: () => toast.error(`You've already claimed this reward!`),
+          }
+        : {
+            label: "Claim",
+            onClick: handleClaimClick,
+          },
+    });
+  }, [handleClaimClick, isClaimed, network, user]);
 
   const showSteps = useCallback((index: number): void => {
     if (index < guide.steps.length) {
@@ -188,24 +191,25 @@ export default function Page() {
   useEffect(() => {
     if (!user) return;
 
-    const guideUser = localStorage.getItem("guideUser");
-    const welcomeUser = localStorage.getItem("welcomeNewUser");
+    const guideUserData = localStorage.getItem("guideUser");
+    if (!guideUserData) return;
 
-    // Show welcome message if guide-user exists but welcomeNewUser does not
-    if (guideUser && !welcomeUser) {
-      const { id } = JSON.parse(guideUser);
-      if (id) {
-        toast.message("Welcome!", {
-          description: guide?.intro || "Let's get started!",
-          action: {
-            label: "Start",
-            onClick: () => showSteps(0),
-          },
-          duration: 30000,
-        });
-      }
+    try {
+      const { id } = JSON.parse(guideUserData);
+      if (!id) return;
+
+      toast.message("Welcome!", {
+        description: guide?.intro || "Let's get started!",
+        action: {
+          label: "Start",
+          onClick: () => showSteps(0),
+        },
+        duration: 30000,
+      });
+    } catch (error) {
+      console.error("Error parsing guideUser from localStorage:", error);
     }
-  }, [showSteps, user]);
+  }, [showSteps, user]); // Added `guide` dependency for consistency
 
   if (loading) {
     return <h2 className={styles.section__title}>Loading...</h2>;
@@ -225,7 +229,9 @@ export default function Page() {
       <main className={styles.main}>
         {/*==================== WIDGET ====================*/}
         <section className={`${styles.widget} ${styles.section}`} id="widget">
-          <h2 className={styles.section__title}>Hi, {user.username}</h2>
+          <h2 className={styles.section__title}>
+            Your username is {user.username}.
+          </h2>
           <div
             className={`${styles.widget__container} ${styles.container} ${styles.grid}`}
           >
@@ -236,7 +242,7 @@ export default function Page() {
                 className={styles.widget__img}
               />
               <p className={styles.widget__description}>
-                <span>Share your link!</span>
+                <span>Share your link</span>
                 Copy your unique invite link to share with friends
               </p>
               <button

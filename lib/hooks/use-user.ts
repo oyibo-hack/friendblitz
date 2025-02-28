@@ -73,19 +73,16 @@ export const useUser = (
             unsubscribe = onSnapshot(userRef, (docSnap) => {
               if (docSnap.exists()) {
                 const updated = docSnap.data();
-                setUser({
-                  id: updated.id,
-                  username: updated.username,
-                  tokens: updated.tokens,
-                  email: updated.email,
+                setUser((prevUser) => ({
+                  ...(prevUser as User), // Ensure TypeScript knows it's a User object
+                  ...updated, // Spread existing properties from Firestore
                   phone_number: caesarCipher(
                     updated.phone_number,
                     Number(process.env.NEXT_PUBLIC_CIPHER_SHIFT!),
                     "decode",
                     true
-                  ), // Decode the user's phone number using a Caesar cipher
-                  created_at: updated.created_at,
-                });
+                  ),
+                }));
               } else {
                 setUser(null);
                 router.push("/join");
@@ -109,19 +106,15 @@ export const useUser = (
           const usersSnap = await getDocs(usersQuery);
 
           const users = usersSnap.docs.map((doc) => {
-            const data = doc.data();
+            const data = doc.data() as User; // Explicitly type the data as User
             return {
-              id: data.id,
-              username: data.username,
-              tokens: data.tokens,
-              email: data.email,
+              ...data, // Spread all properties
               phone_number: caesarCipher(
                 data.phone_number,
                 Number(process.env.NEXT_PUBLIC_CIPHER_SHIFT!),
                 "decode",
                 true
-              ), // Decode the user's phone number using a Caesar cipher
-              created_at: data.created_at,
+              ), // Decode the user's phone number
             };
           });
 

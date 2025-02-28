@@ -123,7 +123,7 @@ function Popup({ routes }: { routes: string[] }) {
           <span className={styles.block__info}></span>
           <p className={styles.block__description}>{currentMessage.subtitle}</p>
           <a
-            href="/profile#share"
+            href="/my-profile#share"
             className={`${styles.button} ${styles.button__yellow} ${styles.block__button}`}
             onClick={() => setIsPopupVisible(false)}
           >
