@@ -1087,7 +1087,7 @@ export async function manageUserFriends(
         airtime: number | null;
         data: string | null;
       }
-    | { action: "claim"; friendId: string }
+    | { action: "claim"; userId: string; friendId: string }
 ): Promise<Friend[] | Friend | User | null> {
   try {
     switch (params.action) {
@@ -1128,13 +1128,24 @@ export async function manageUserFriends(
       }
 
       case "claim": {
-        // Direct document reference and update
-        const friendDocRef = doc(db, "friends", params.friendId);
-        const friendDoc = await getDoc(friendDocRef);
+        // Get all friends for a user
+        const friendsRef = collection(db, "friends");
+        const q = query(
+          friendsRef,
+          where("user_id", "==", params.userId),
+          where("friend_id", "==", params.friendId)
+        );
 
-        if (!friendDoc.exists()) return null;
+        const querySnapshot = await getDocs(q);
 
-        await updateDoc(friendDocRef, { is_claimed: true });
+        if (querySnapshot.empty) {
+          throw new Error("Friend not found");
+        }
+
+        const friendDoc = querySnapshot.docs[0]; // Assuming there's only one match
+        const friendRef = doc(db, "friends", friendDoc.id);
+
+        await updateDoc(friendRef, { is_claimed: true });
 
         return {
           id: friendDoc.id,
