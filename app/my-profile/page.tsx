@@ -11,54 +11,54 @@ import Navbar from "@/components/navbar";
 
 const guide = {
   intro:
-    "How to Use Your Profile 🚀\nHey there! Let’s go step by step on how to make the most of your profile.",
+    "Hey! Let’s make sure you’re getting the most out of your profile. It’s easy—just follow these steps!",
   steps: [
     {
-      title: "Share Your Invite Link",
+      title: "🔗 Step 1: Share Your Invite Link",
       description:
-        "Click the Share button to copy your unique invite link or share it directly with friends.",
+        "Hit the Share button to copy your invite link or send it straight to your friends. More friends = more rewards!",
       action: "Next",
     },
     {
-      title: "Claim Your Rewards",
+      title: "🎁 Step 2: Claim Your Rewards",
       description:
-        "Go to the Rewards section to view unredeemed invites and claim bonuses like data or airtime.",
+        "Check the Rewards section to see any unclaimed bonuses like free data or airtime. Don’t let them go to waste!",
       action: "Next",
     },
     {
-      title: "Track Your Friends",
+      title: "👀 Step 3: Track Your Friends",
       description:
-        "Check the Friends section to see who has joined using your invite link and track their status.",
+        "Wondering who joined through your link? The Friends section shows who’s in and their status.",
       action: "Next",
     },
     {
-      title: "Check & Use Your Tokens",
+      title: "💰 Step 4: Check & Use Your Tokens",
       description:
-        "View your token balance in the Tokens section and trade tokens for airtime or data.",
+        "Your Tokens section shows your balance. Use them to grab airtime, data, or other perks. Spend them wisely!",
       action: "Next",
     },
     {
-      title: "Play & Earn More Tokens",
+      title: "🎮 Step 5: Play & Earn More Tokens",
       description:
-        "Head over to the Puzzle section to play games and collect extra tokens.",
+        "Love games? Head to the Puzzle section, play, and stack up extra tokens. Free rewards just for playing? Yes, please!",
       action: "Next",
     },
     {
-      title: "Complete Challenges",
+      title: "🏆 Step 6: Complete Challenges",
       description:
-        "Visit the Challenges section to complete tasks and earn bonus tokens.",
+        "The Challenges section has tasks you can complete to earn even more tokens. The more you do, the more you get!",
       action: "Next",
     },
     {
-      title: "Manage Your Account",
+      title: "⚙️ Step 7: Manage Your Account",
       description:
-        "In the Manage Account section, you can update settings, log out, or delete your account anytime.",
+        "Need to tweak your settings, log out, or even delete your account? It’s all under Manage Account.",
       action: "Next",
     },
     {
-      title: "You’re All Set!",
+      title: "🚀 You’re All Set!",
       description:
-        "Congrats! You now know how to use all the features of your profile. Start inviting friends and earning rewards!",
+        "And that’s a wrap! You’re now a pro at using your profile. Start inviting, playing, and earning—go for it!",
       action: "Done",
     },
   ],
@@ -197,8 +197,8 @@ export default function Page() {
       const { id } = JSON.parse(guideUserData);
       if (!id) return;
 
-      toast.message("Welcome!", {
-        description: guide?.intro || "Let's get started!",
+      toast.message("How to Use Your Profile 🚀", {
+        description: guide.intro,
         action: {
           label: "Start",
           onClick: () => showSteps(0),
