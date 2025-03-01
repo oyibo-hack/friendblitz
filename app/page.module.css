@@ -582,6 +582,7 @@
 /*=============== WIDGET ===============*/
 .widget {
   position: relative;
+  margin-bottom: 7.5rem;
 }
 
 .widget__container {

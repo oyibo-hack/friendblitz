@@ -66,7 +66,7 @@ function Navbar() {
         </li>
 
         <li>
-          <a href="#rewards" className={styles.bottom__nav__link}>
+          <a href="/my-profile#rewards" className={styles.bottom__nav__link}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -84,7 +84,7 @@ function Navbar() {
         </li>
 
         <li>
-          <a href="#setting" className={styles.bottom__nav__link}>
+          <a href="/my-profile#account" className={styles.bottom__nav__link}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"

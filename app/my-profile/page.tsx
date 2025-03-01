@@ -234,7 +234,10 @@ export default function Page() {
           <div
             className={`${styles.widget__container} ${styles.container} ${styles.grid}`}
           >
-            <article className={`${styles.widget__card} animated-bounce-twice`}>
+            <article
+              className={`${styles.widget__card} animated-bounce-twice`}
+              id="share"
+            >
               <img
                 src="/logo-big.png"
                 alt="image"
