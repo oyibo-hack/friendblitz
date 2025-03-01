@@ -6,6 +6,7 @@ import ScrollUp from "@/components/scroll-up";
 import Script from "next/script";
 import Popup from "@/components/popup";
 import { PROD_URL } from "@/lib/constant";
+import MembershipToast from "@/components/membership-toast";
 
 const outfit = Outfit({
   variable: "--body-font",
@@ -63,6 +64,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.variable} ${cherryBombOne.variable}`}>
+        <MembershipToast />
         {children}
         {/* Google Analytics */}
         <Script
@@ -82,7 +84,15 @@ export default function RootLayout({
             `,
           }}
         />
-        <Popup routes={["/", "/my-profile/puzzle", "/free-points", "/rules", "/privacy-policy"]} />
+        <Popup
+          routes={[
+            "/",
+            "/my-profile/puzzle",
+            "/free-points",
+            "/rules",
+            "/privacy-policy",
+          ]}
+        />
         <ScrollUp />
         <Toaster
           position="top-center"
