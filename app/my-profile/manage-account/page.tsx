@@ -61,7 +61,7 @@ function ManageAccount() {
   return (
     <div>
       {/*==================== HEADER ====================*/}
-      <Navbar user={user} />
+      <Navbar />
       {/*==================== MAIN ====================*/}
       <main className={styles.main}>
         {/*==================== WIDGET ====================*/}
