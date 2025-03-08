@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+:root {
+  --header-height: 3.5rem;
+
+  --first-color: hsl(238, 100%, 70%);
+  --first-gradient: linear-gradient(
+    90deg,
+    hsl(243, 96%, 54%),
+    hsl(296, 78%, 53%)
+  );
+  --second-gradient: linear-gradient(
+    90deg,
+    hsl(192, 94%, 49%),
+    hsl(224, 98%, 51%)
+  );
+  --third-gradient: linear-gradient(
+    90deg,
+    hsl(25, 96%, 55%),
+    hsl(34, 93%, 53%)
+  );
+  --white-color: hsl(0, 0%, 100%);
+  --text-color: hsl(0, 0%, 75%);
+  --text-color-light: hsl(0, 0%, 55%);
+  --border-color: hsl(0, 0%, 45%);
+  --body-color: hsl(238, 100%, 12%);
+  --body-color-light: hsl(238, 60%, 20%);
+
+  --biggest-font-size: 3rem;
+  --big-font-size: 1.5rem;
+  --h1-font-size: 1.5rem;
+  --h2-font-size: 1.25rem;
+  --normal-font-size: 0.938rem;
+  --small-font-size: 0.813rem;
+
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semi-bold: 600;
+
+  --z-tooltip: 10;
+  --z-fixed: 100;
+}
+
+@media screen and (min-width: 1150px) {
+  :root {
+    --biggest-font-size: 5.5rem;
+    --big-font-size: 3rem;
+    --h1-font-size: 2.25rem;
+    --h2-font-size: 1.5rem;
+    --normal-font-size: 1rem;
+    --small-font-size: 0.875rem;
+  }
+}
+
+body,
+input,
+button {
+  font-family: var(--body-font);
+  font-size: var(--normal-font-size);
+}
+
+body {
+  background-color: var(--body-color);
+  color: var(--text-color);
+}
+
+input,
+button {
+  /* border: none; */
+  outline: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/*=============== SCROLL BAR ===============*/
+::-webkit-scrollbar {
+  width: 0.6rem;
+  background-color: hsl(238, 60%, 20%);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(238, 50%, 30%);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(238, 40%, 40%);
+}
+
+/*=============== MODAL ===============*/
+.modal {
+  position: fixed;
+  inset: 0;
+  background-color: hsl(5, 90%, 4%, 0.2);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: var(--z-modal);
+  transition: opacity 0.4s, visibility 0.4s;
+}
+
+.modal__container {
+  position: relative;
+  max-width: 350px;
+}
+
+.modal__close {
+  position: absolute;
+  top: 1.5rem;
+  right: 0.35rem;
+  width: 1.5rem;
+  color: var(--white-color);
+  cursor: pointer;
+}
+
+/* Active Modal */
+.activeModal {
+  opacity: 1;
+  visibility: initial;
+  pointer-events: initial;
+}
