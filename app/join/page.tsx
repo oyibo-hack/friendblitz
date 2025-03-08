@@ -5,6 +5,7 @@ import styles from "../page.module.css";
 import { useEffect, useRef, useState } from "react";
 import {
   caesarCipher,
+  fraudDetection,
   getDeviceInfo,
   getMNO,
   getScreenResolution,
@@ -26,7 +27,14 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 
 import userList from "@/nameList.json";
 
@@ -128,6 +136,14 @@ export default function Page() {
     }
 
     try {
+      // 🚨 Check if email is blacklisted
+      const blacklistedEmails = await fraudDetection("getBlacklistedEmails");
+      if (blacklistedEmails.includes(email)) {
+        toast.error("This email has been flagged");
+        setIsRegisterLoading(false);
+        return;
+      }
+
       const phoneNumber = new numberFormatter(registerPhone, "+234");
 
       const mno = getMNO(phoneNumber.withoutPrefix());
@@ -154,6 +170,71 @@ export default function Page() {
         return;
       }
 
+      // Get User's IP Address & Device Info
+      const { country: userCountry, ip: userIP } = await getUserLocation();
+      const {
+        os: deviceOS,
+        browser: deviceBrowser,
+        deviceModel,
+      } = getDeviceInfo();
+      const deviceFingerprint = `${deviceOS}-${deviceBrowser}-${deviceModel}`;
+
+      // ! Warning 🚨 Fraud Check: Limit registrations from the same IP (More than 2 is flagged)
+      const usersWithSameIP = await getDocs(
+        query(collection(db, "users"), where("ip_address", "==", userIP))
+      );
+      if (usersWithSameIP.size >= 2) {
+        await fraudDetection("addEmailToBlacklist", email);
+        toast.error("An unexpected error occurred.");
+        setIsRegisterLoading(false);
+        setModalVisible(false);
+        return;
+      }
+
+      // ! Warning 🚨 Fraud Check: Prevent multiple registrations from the same device
+      const usersWithSameDevice = await getDocs(
+        query(
+          collection(db, "users"),
+          where("device_info.fingerprint", "==", deviceFingerprint)
+        )
+      );
+      if (usersWithSameDevice.size >= 2) {
+        await fraudDetection("addEmailToBlacklist", email);
+        toast.error("An unexpected error occurred.");
+        setIsRegisterLoading(false);
+        setModalVisible(false);
+        return;
+      }
+
+      // ! Warning 🚨 Fraud Check: Blacklist check for email (Using a basic regex for disposable emails)
+      const disposableEmailDomains = [
+        "tempmail.com",
+        "10minutemail.com",
+        "mailinator.com",
+      ];
+      const emailDomain = email.split("@")[1];
+      if (disposableEmailDomains.includes(emailDomain)) {
+        await fraudDetection("addEmailToBlacklist", email);
+        toast.error("Please use a valid email address.");
+        setIsRegisterLoading(false);
+        setModalVisible(false);
+        return;
+      }
+
+      // ! Warning 🚨 Fraud Check: Rate limiting (Preventing too many signups in short time)
+      const lastSignup = localStorage.getItem("lastSignupTime");
+      if (lastSignup && Date.now() - Number(lastSignup) < 60000) {
+        await fraudDetection("addEmailToBlacklist", email);
+        toast.error(
+          "Too many registration attempts. Please wait and try again."
+        );
+        setIsRegisterLoading(false);
+        setModalVisible(false);
+        return;
+      }
+
+      localStorage.setItem("lastSignupTime", String(Date.now()));
+
       // Instantiate VTU services
       const vtuService = new VTUService();
 
@@ -175,22 +256,19 @@ export default function Page() {
       );
       const user = userCredential.user;
 
-      const { country: userCountry, ip: userIP } = await getUserLocation();
-      const {
-        os: deviceOS,
-        browser: deviceBrowser,
-        deviceModel,
-      } = getDeviceInfo();
       const darkMode = isDarkModeEnabled();
       const screenResolution = getScreenResolution();
 
       // Save user data to Firestore
       await setDoc(doc(db, "users", user.uid), {
+        isBlocked: false,
+        fraudDetected: false,
         country: userCountry, // 🌍 User's country
         device_info: {
           os: deviceOS,
           browser: deviceBrowser,
           model: deviceModel,
+          fingerprint: deviceFingerprint,
           screen_resolution: screenResolution,
           is_mobile: /Mobi|Android/i.test(navigator.userAgent),
         },
@@ -206,6 +284,7 @@ export default function Page() {
           users?.flatMap((user) => user.username) ?? []
         )[0],
         tokens: 0,
+        total_tokens: 0,
         email,
         mno: getMNO(phoneNumber.withoutPrefix()),
         phone_number: caesarCipher(
@@ -228,21 +307,36 @@ export default function Page() {
       if (friend) {
         const friendMNO = getMNO(friend.phone_number);
         if (friendMNO !== "Unknown") {
-          const rewardType = Math.random() < 0.5 ? "data" : "airtime";
-          const amount = getVTUReward(friendMNO, rewardType);
+          // Randomly select one of the three reward types
+          const rewardOptions: Array<"airtime" | "data" | "tokens"> = [
+            "data",
+            "airtime",
+            "tokens",
+          ];
+          const rewardType =
+            rewardOptions[Math.floor(Math.random() * rewardOptions.length)];
 
-          const rewardData =
-            rewardType === "data"
-              ? { data: String(amount) }
-              : { airtime: Number(amount) };
+          // Get reward amount (only call getVTUReward for data/airtime)
+          const amount =
+            rewardType === "tokens"
+              ? 50
+              : getVTUReward(friendMNO, rewardType as "airtime" | "data");
+
+          // Structuring reward data to ensure only one property is assigned
+          const rewardData = {
+            data: rewardType === "data" ? String(amount) : null,
+            airtime: rewardType === "airtime" ? Number(amount) : null,
+            tokens: rewardType === "tokens" ? 50 : null,
+          };
 
           // Create friend record in the database
           await manageUserFriends({
             action: "create",
             friendId: user.uid,
             userId: friend.id,
-            airtime: rewardData.airtime ?? null,
-            data: rewardData.data ?? null,
+            airtime: rewardData.airtime,
+            data: rewardData.data,
+            tokens: rewardData.tokens,
           });
         }
       }
@@ -291,6 +385,16 @@ export default function Page() {
     }
 
     try {
+      // 🚨 Fraud Check: Rate limiting (Preventing too many login attempts)
+      const lastLoginAttempt = localStorage.getItem("lastLoginTime");
+
+      if (lastLoginAttempt && Date.now() - Number(lastLoginAttempt) < 60000) {
+        toast.error("Too many login attempts. Please wait and try again.");
+        return;
+      }
+
+      localStorage.setItem("lastLoginTime", String(Date.now()));
+
       // Attempt to sign in with email from user details
       await signInWithEmailAndPassword(auth, userDetails.email, password);
 
@@ -646,11 +750,7 @@ export default function Page() {
       <div className={`modal ${modalVisible ? "activeModal" : ""}`}>
         <div className="modal__container">
           <article className={styles.block__card}>
-            <img
-              src="/image.png"
-              alt="image"
-              className={styles.block__img}
-            />
+            <img src="/image.png" alt="image" className={styles.block__img} />
 
             {ENABLE_PAYMENT ? (
               <h3 className={styles.block__title}>

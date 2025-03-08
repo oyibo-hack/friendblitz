@@ -23,6 +23,8 @@ export type TokenEntry = {
 
 // Define the User type
 export interface User {
+  isBlocked: boolean;
+  fraudDetected: boolean;
   country: string; // 🌍 User's country
   device_info: {
     os: string;
@@ -206,6 +208,55 @@ export function caesarCipher(
 
   return result;
 }
+
+export const BLACKLIST_COLLECTION = "fraud_detection"; // Collection for fraud records
+export const BLACKLIST_DOC = "blacklist_emails"; // Document storing blacklisted emails
+
+/**
+ * Fraud detection: fetch blocked users, get blacklisted emails, or add an email to the blacklist.
+ * @param {"getBlockedUsers" | "getBlacklistedEmails" | "addEmailToBlacklist"} action - Action to perform.
+ * @param {string} [email] - Email to blacklist (only for "addEmailToBlacklist").
+ */
+export const fraudDetection = async (
+  action: "getBlockedUsers" | "getBlacklistedEmails" | "addEmailToBlacklist",
+  email?: string
+) => {
+  try {
+    if (action === "getBlockedUsers") {
+      // 🚨 Fetch users flagged for fraud
+      const usersRef = collection(db, "users");
+      const blockedUsersSnapshot = await getDocs(usersRef);
+
+      // Filter users who have `isBlocked` or `fraudDetected` set to true
+      return blockedUsersSnapshot.docs
+        .map((doc) => doc.data()) // No explicit id assignment
+        .filter((user) => user?.isBlocked || user?.fraudDetected);
+    }
+
+    if (action === "getBlacklistedEmails") {
+      // 🚨 Retrieve blacklisted emails from Firestore
+      const blacklistRef = doc(db, BLACKLIST_COLLECTION, BLACKLIST_DOC);
+      const blacklistSnapshot = await getDoc(blacklistRef);
+      return blacklistSnapshot.exists()
+        ? blacklistSnapshot.data().emails || []
+        : [];
+    }
+
+    if (action === "addEmailToBlacklist" && email) {
+      // 🚨 Add email to blacklist if not already present
+      const blacklistRef = doc(db, BLACKLIST_COLLECTION, BLACKLIST_DOC);
+      const currentBlacklist = await fraudDetection("getBlacklistedEmails");
+      if (!currentBlacklist.includes(email)) {
+        await updateDoc(blacklistRef, {
+          emails: [...currentBlacklist, email],
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Fraud detection error:", error);
+    return null;
+  }
+};
 
 /**
  * Merges parts of the given usernames to generate combinations,
@@ -689,7 +740,12 @@ export const tokensManager = async (
         if (typeof currentTokens === "number") {
           const updatedTokens = currentTokens + payload.tokens; // Calculate new tokens
           const userDocRef = doc(db, "users", payload.userId); // Reference to the user's document
-          await updateDoc(userDocRef, { tokens: updatedTokens }); // Update Firestore document
+
+          // Update Firestore in a single call
+          await updateDoc(userDocRef, {
+            tokens: updatedTokens,
+            total_tokens: updatedTokens,
+          });
           return updatedTokens; // Return updated tokens
         }
 
@@ -1083,6 +1139,7 @@ export async function manageUserFriends(
         friendId: string;
         airtime: number | null;
         data: string | null;
+        tokens: number | null;
       }
     | { action: "claim"; userId: string; friendId: string }
 ): Promise<Friend[] | Friend | User | null> {
@@ -1123,6 +1180,7 @@ export async function manageUserFriends(
           friend_id: params.friendId,
           airtime: params.airtime ?? null,
           data: params.data ?? null,
+          tokens: params.tokens ?? null,
           is_claimed: false,
           created_at: new Date().toISOString(),
         };
