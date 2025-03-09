@@ -200,7 +200,7 @@ export default function Page() {
       case "tokens":
         return <TokensTab user={user} setActiveTab={setActiveTab} />;
       case "tasks":
-        return <TasksTab user={user} />;
+        return <TasksTab user={user} friends={friends} />;
       case "puzzle":
         return <PuzzleTab />;
       case "manage account":

@@ -261,9 +261,6 @@ export default function Page() {
 
       // Save user data to Firestore
       await setDoc(doc(db, "users", user.uid), {
-        isBlocked: false,
-        fraudDetected: false,
-        country: userCountry, // 🌍 User's country
         device_info: {
           os: deviceOS,
           browser: deviceBrowser,
@@ -277,6 +274,14 @@ export default function Page() {
           bundleCode: getVTUReward(mno, "data"),
           date: new Date().toISOString(),
         },
+        referralMilestones: {
+          "5": false,
+          "15": false,
+          "25": false,
+          "75": false,
+          "100": false,
+        },
+        challengeMilestone: false,
         ip_address: userIP,
         id: user.uid,
         username: mergeUsername(
@@ -293,6 +298,7 @@ export default function Page() {
           "encode",
           true
         ),
+        country: userCountry, // User's country
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         language: navigator.language,
         is_dark_mode: darkMode,
@@ -301,6 +307,8 @@ export default function Page() {
         login_method: user.providerData[0].providerId,
         referrer: document.referrer,
         created_at: new Date().toISOString(),
+        isBlocked: false,
+        fraudDetected: false,
       });
 
       // Handle friend referral reward

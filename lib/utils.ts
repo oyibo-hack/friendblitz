@@ -23,9 +23,6 @@ export type TokenEntry = {
 
 // Define the User type
 export interface User {
-  isBlocked: boolean;
-  fraudDetected: boolean;
-  country: string; // 🌍 User's country
   device_info: {
     os: string;
     browser: string;
@@ -38,6 +35,10 @@ export interface User {
     bundleCode: string;
     date: string;
   };
+  referralMilestones: {
+    [key: string]: boolean;
+  };
+  challengeMilestone: boolean;
   ip_address: string;
   id: string;
   username: string;
@@ -47,6 +48,7 @@ export interface User {
   email: string;
   mno: string;
   phone_number: string;
+  country: string; // User's country
   timezone: string;
   language: string;
   is_dark_mode: boolean;
@@ -55,6 +57,8 @@ export interface User {
   login_method: string;
   referrer: string;
   created_at: string;
+  isBlocked: boolean;
+  fraudDetected: boolean;
 }
 
 // Define interfaces for Friend and User models
@@ -140,6 +144,24 @@ export const isDarkModeEnabled = () => {
 export const getScreenResolution = () => {
   return `${window.screen.width}x${window.screen.height}`;
 };
+
+/**
+ * Level thresholds for user progression.
+ */
+export const levelLists = [120, 250, 340, 460, 600, 750, 920, 1100, 1300];
+
+/**
+ * Determines the user's level based on token count.
+ *
+ * @param {number} tokens - The number of tokens the user has.
+ * @returns {number} The calculated user level.
+ */
+export function calculateUserLevel(tokens: number): number {
+  for (let i = 0; i < levelLists.length; i++) {
+    if (tokens < levelLists[i]) return i + 1;
+  }
+  return levelLists.length + 1; // If tokens exceed the last level
+}
 
 /**
  * Implements the Caesar Cipher encryption/decryption algorithm.
@@ -290,6 +312,18 @@ export function mergeUsername(
       // Only add the combination if it's not in the usedUsernames array and not a duplicate
       if (
         !usedUsernames.includes(combination) &&
+        // ! This is temporary: Excluding leaderboard names to prevent conflicts
+        ![
+          "Bouncy Bobcat",
+          "Friendly Fox",
+          "Happy Hedgehog",
+          "Humble Hornbill",
+          "Swift Swordfish",
+          "Lucky Lark",
+          "Cheerful Cheetah",
+          "Jolly Jaguar",
+          "Gentle Gazelle",
+        ].includes(combination) &&
         !combinations.has(combination)
       ) {
         combinations.add(combination);
@@ -833,6 +867,84 @@ export const tokensManager = async (
 };
 
 /**
+ * Manages a user's token history, supporting get, update, and delete actions.
+ * Ensures the token history always contains exactly 3 entries when updating.
+ *
+ * @param userId - The ID of the user whose token history is being modified.
+ * @param action - The action to perform: "get", "update", or "delete".
+ * @param newTask - (Optional) The new task to add when updating.
+ */
+export const manageTokenHistory = async (
+  userId: string,
+  action: ActionType,
+  newTask?: TokenEntry
+) => {
+  const userRef = doc(db, "users", userId);
+
+  try {
+    switch (action) {
+      case "get": {
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) {
+          console.log("User document does not exist.");
+          return null;
+        }
+        console.log("User token history:", userSnap.data().token_history || {});
+        return userSnap.data().token_history || {};
+      }
+
+      case "update": {
+        if (!newTask) {
+          console.error(
+            "New task object is required for updating token history."
+          );
+          return;
+        }
+
+        const userSnap = await getDoc(userRef);
+        const token_history = userSnap.exists()
+          ? userSnap.data().token_history || {}
+          : {};
+
+        // Convert object to sorted array
+        const historyEntries = Object.entries(token_history)
+          .sort(([a], [b]) => Number(a) - Number(b))
+          .map(([, value]) => value); // Extract only values
+
+        // Ensure we always keep **at most 7** entries
+        if (historyEntries.length >= 7) {
+          historyEntries.shift(); // Remove oldest entry
+        }
+
+        // Add new task
+        historyEntries.push(newTask);
+
+        // Re-index history (keys from 0 to 6)
+        const updatedTokenHistory = Object.fromEntries(
+          historyEntries.map((entry, index) => [index.toString(), entry])
+        );
+
+        // Save back to Firestore
+        await updateDoc(userRef, { token_history: updatedTokenHistory });
+        console.log("User token history updated successfully!");
+        break;
+      }
+
+      case "delete": {
+        await updateDoc(userRef, { token_history: deleteField() });
+        console.log("User token history deleted successfully!");
+        break;
+      }
+
+      default:
+        console.error("Invalid action type. Use 'get', 'update', or 'delete'.");
+    }
+  } catch (error) {
+    console.error(`Error performing ${action} on user token history:`, error);
+  }
+};
+
+/**
  * Perform all challenge-related operations.
  * @param action - The operation to perform: "fetch", "filter", "addUser", or "create".
  * @param payload - Data needed for the operation (varies by action).
@@ -1223,102 +1335,6 @@ export async function manageUserFriends(
     console.error(`Error performing ${params.action}:`, error);
     throw error;
   }
-}
-
-/**
- * Manages a user's token history, supporting get, update, and delete actions.
- * Ensures the token history always contains exactly 3 entries when updating.
- *
- * @param userId - The ID of the user whose token history is being modified.
- * @param action - The action to perform: "get", "update", or "delete".
- * @param newTask - (Optional) The new task to add when updating.
- */
-export const manageTokenHistory = async (
-  userId: string,
-  action: ActionType,
-  newTask?: TokenEntry
-) => {
-  const userRef = doc(db, "users", userId);
-
-  try {
-    switch (action) {
-      case "get": {
-        const userSnap = await getDoc(userRef);
-        if (!userSnap.exists()) {
-          console.log("User document does not exist.");
-          return null;
-        }
-        console.log("User token history:", userSnap.data().token_history || {});
-        return userSnap.data().token_history || {};
-      }
-
-      case "update": {
-        if (!newTask) {
-          console.error(
-            "New task object is required for updating token history."
-          );
-          return;
-        }
-
-        const userSnap = await getDoc(userRef);
-        const token_history = userSnap.exists()
-          ? userSnap.data().token_history || {}
-          : {};
-
-        // Convert object to sorted array
-        const historyEntries = Object.entries(token_history)
-          .sort(([a], [b]) => Number(a) - Number(b))
-          .map(([, value]) => value); // Extract only values
-
-        // Ensure we always keep **at most 7** entries
-        if (historyEntries.length >= 7) {
-          historyEntries.shift(); // Remove oldest entry
-        }
-
-        // Add new task
-        historyEntries.push(newTask);
-
-        // Re-index history (keys from 0 to 6)
-        const updatedTokenHistory = Object.fromEntries(
-          historyEntries.map((entry, index) => [index.toString(), entry])
-        );
-
-        // Save back to Firestore
-        await updateDoc(userRef, { token_history: updatedTokenHistory });
-        console.log("User token history updated successfully!");
-        break;
-      }
-
-      case "delete": {
-        await updateDoc(userRef, { token_history: deleteField() });
-        console.log("User token history deleted successfully!");
-        break;
-      }
-
-      default:
-        console.error("Invalid action type. Use 'get', 'update', or 'delete'.");
-    }
-  } catch (error) {
-    console.error(`Error performing ${action} on user token history:`, error);
-  }
-};
-
-/**
- * Level thresholds for user progression.
- */
-export const levelLists = [120, 250, 340, 460, 600, 750, 920, 1100, 1300];
-
-/**
- * Determines the user's level based on token count.
- *
- * @param {number} tokens - The number of tokens the user has.
- * @returns {number} The calculated user level.
- */
-export function calculateUserLevel(tokens: number): number {
-  for (let i = 0; i < levelLists.length; i++) {
-    if (tokens < levelLists[i]) return i + 1;
-  }
-  return levelLists.length + 1; // If tokens exceed the last level
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

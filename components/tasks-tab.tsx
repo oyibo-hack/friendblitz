@@ -1,3 +1,4 @@
+import { db } from "@/lib/firebase";
 import {
   checkChallenge,
   manageChallenges,
@@ -5,11 +6,13 @@ import {
   tokensManager,
   type Challenge,
   type User,
+  type Friend,
 } from "@/lib/utils";
+import { doc, updateDoc } from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const TasksTab = ({ user }: { user: User }) => {
+const TasksTab = ({ user, friends }: { user: User; friends: Friend[] }) => {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loadingStates, setLoadingStates] = useState<{
     [key: number]: boolean;
@@ -79,9 +82,7 @@ const TasksTab = ({ user }: { user: User }) => {
 
   return (
     <div className="bg-gray-800 text-gray-200 rounded-lg p-6 shadow-md">
-      <h3 className="text-3xl font-bold mb-4">
-        Your Tasks
-      </h3>
+      <h3 className="text-3xl font-bold mb-4">Your Tasks</h3>
       <p className="mb-4">Complete tasks to earn tokens and level up!</p>
 
       <div className="space-y-4">
@@ -145,6 +146,8 @@ const TasksTab = ({ user }: { user: User }) => {
       </div>
 
       <StreakBonus user={user} />
+      <ReferralMilestones user={user} friends={friends} />
+      <ChallengeMilestoneBonus user={user} challenges={challenges} />
     </div>
   );
 };
@@ -265,6 +268,190 @@ function StreakBonus({ user }: { user: User }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+const MILESTONES = [
+  { count: 5, tokens: 75 },
+  { count: 15, tokens: 125 },
+  { count: 25, tokens: 200 },
+  { count: 75, tokens: 500 },
+  { count: 100, tokens: 1200 },
+];
+
+function ReferralMilestones({
+  user,
+  friends,
+}: {
+  user: User;
+  friends: Friend[];
+}) {
+  const [referralCount, setReferralCount] = useState(0);
+  const [canClaim, setCanClaim] = useState(false);
+
+  useEffect(() => {
+    if (!user.referralMilestones) return;
+
+    let lastAchievedMilestone = 0;
+    let claimable = false;
+
+    for (const milestone of MILESTONES) {
+      if (user.referralMilestones[milestone.count]) {
+        lastAchievedMilestone = milestone.count;
+      } else if (friends.length >= milestone.count) {
+        lastAchievedMilestone = milestone.count;
+        claimable = true;
+        break;
+      }
+    }
+
+    setReferralCount(lastAchievedMilestone);
+    setCanClaim(claimable);
+  }, [friends.length, user.referralMilestones]);
+
+  const claimReferralReward = async () => {
+    const milestone = MILESTONES.find((m) => m.count === referralCount);
+    if (!milestone) return;
+
+    try {
+      const userRef = doc(db, "users", user.id);
+      await updateDoc(userRef, {
+        [`referralMilestones.${referralCount}`]: true,
+      });
+
+      // Add tokens to the user
+      await tokensManager("add", {
+        userId: user.id,
+        tokens: milestone.tokens,
+      });
+
+      // ✅ Add token history after successful bonus claim
+      await manageTokenHistory(user.id, "update", {
+        task: `Bonus Claim: Received ${milestone.tokens} tokens`,
+        date: new Date().toISOString(),
+        tokens: milestone.tokens,
+      });
+
+      toast.success(`You've earned ${milestone.tokens} tokens!`);
+    } catch (error) {
+      console.error("Error claiming reward:", error);
+    }
+  };
+
+  return (
+    <div className="mt-6 p-4 bg-gray-800 rounded-md border border-gray-600">
+      <h4 className="font-bold text-green-400 mb-2">Referral Milestones</h4>
+      <p className="text-sm text-gray-300 mb-2">
+        Invite friends and unlock rewards!
+      </p>
+      <div className="flex space-x-2">
+        {MILESTONES.map(({ count }) => (
+          <div
+            key={count}
+            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              referralCount >= count
+                ? "bg-green-500 text-white"
+                : "bg-gray-700 text-gray-400"
+            }`}
+          >
+            {referralCount >= count ? "✓" : count}
+          </div>
+        ))}
+      </div>
+      {canClaim && (
+        <button
+          onClick={claimReferralReward}
+          className="cursor-pointer mt-3 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-500"
+        >
+          Claim {MILESTONES.find((m) => m.count === referralCount)?.tokens}{" "}
+          Tokens
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ChallengeMilestoneBonus({
+  user,
+  challenges,
+}: {
+  user: User;
+  challenges: Challenge[];
+}) {
+  const [completedChallenges, setCompletedChallenges] = useState(0);
+  const [canClaim, setCanClaim] = useState(false);
+
+  useEffect(() => {
+    if (user && challenges) {
+      const completedCount = challenges.filter((challenge) =>
+        challenge.completed_user_ids.includes(user.id)
+      ).length;
+      setCompletedChallenges(completedCount);
+
+      // Hide button if user has already claimed the reward
+      setCanClaim(completedCount >= 5 && !user.challengeMilestone);
+    }
+  }, [user, challenges]);
+
+  const claimChallengeReward = async () => {
+    if (completedChallenges < 5) return;
+
+    try {
+      // Add tokens to the user
+      await tokensManager("add", {
+        userId: user.id,
+        tokens: 1000,
+      });
+
+      // ✅ Add token history after successful bonus claim
+      await manageTokenHistory(user.id, "update", {
+        task: "Bonus Claim: Received 1000 tokens",
+        date: new Date().toISOString(),
+        tokens: 1000,
+      });
+
+      // Update challengeMilestone in Firestore
+      const userRef = doc(db, "users", user.id);
+      await updateDoc(userRef, {
+        challengeMilestone: true,
+      });
+
+      toast.success("You've earned 1000 tokens!");
+    } catch (error) {
+      toast.error("Failed to claim reward. Try again later.");
+      console.error("Error claiming challenge reward:", error);
+    }
+  };
+
+  return (
+    <div className="mt-6 p-4 bg-purple-800 rounded-md border border-purple-600">
+      <h4 className="font-bold text-white mb-2">Challenge Milestone</h4>
+      <p className="text-sm text-gray-300 mb-2">
+        Complete at least 5 challenges to receive a 1000-token bonus!
+      </p>
+      <div className="flex space-x-2">
+        {[...Array(5)].map((_, index) => (
+          <div
+            key={index}
+            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              index < completedChallenges
+                ? "bg-purple-500 text-white"
+                : "bg-gray-700 text-gray-400"
+            }`}
+          >
+            {index < completedChallenges ? "✓" : index + 1}
+          </div>
+        ))}
+      </div>
+      {canClaim && (
+        <button
+          onClick={claimChallengeReward}
+          className="cursor-pointer mt-3 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-500"
+        >
+          Claim 1000 Tokens
+        </button>
+      )}
     </div>
   );
 }

@@ -128,9 +128,7 @@ const FriendsTab = ({ user, friends }: { user: User; friends: Friend[] }) => {
 
   return (
     <div className="bg-gray-900 text-white rounded-lg p-6 shadow-md">
-      <h3 className="text-3xl font-bold mb-4">
-        Your Referrals
-      </h3>
+      <h3 className="text-3xl font-bold mb-4">Your Referrals</h3>
       <p className="mb-4 text-gray-300">
         Invite friends to earn tokens! Each successful referral rewards you with
         free airtime, SMS, data, 50 tokens.
@@ -161,38 +159,73 @@ const FriendsTab = ({ user, friends }: { user: User; friends: Friend[] }) => {
             Copy
           </button>
         </div>
-        <button
-          className="bg-blue-600 text-white py-2 px-4 rounded-md w-full hover:bg-blue-700 transition cursor-pointer"
-          onClick={() => {
-            if (!user) return;
 
-            const link = `${location.origin}/join?friend=${user.username
-              .split(" ")
-              .join("-")
-              .toLowerCase()}`;
+        <div className="flex space-x-3">
+          <button
+            className="bg-blue-500 text-white py-2 px-3 rounded-md hover:bg-blue-700"
+            onClick={() => {
+              if (!user) return;
 
-            if (navigator.share) {
-              // Use navigator.share if available
-              navigator
-                .share({
-                  title: `Hi, I'm ${user["username"]}. Use my link.`,
-                  url: link,
-                })
-                .then(() => console.log("Share successful!"))
-                .catch((error) => console.error("Error sharing:", error));
-            } else {
-              // Fallback: Copy to clipboard
-              navigator.clipboard
-                .writeText(link)
-                .then(() => alert("Link copied to clipboard!"))
-                .catch((error) =>
-                  console.error("Could not copy text to clipboard:", error)
-                );
-            }
-          }}
-        >
-          Invite via Whatsapp
-        </button>
+              const link = `${location.origin}/join?friend=${user.username
+                .split(" ")
+                .join("-")
+                .toLowerCase()}`;
+
+              if (navigator.share) {
+                // Use navigator.share if available
+                navigator
+                  .share({
+                    title: `Hi, I'm ${user["username"]}. Use my link.`,
+                    url: link,
+                  })
+                  .then(() => console.log("Share successful!"))
+                  .catch((error) => console.error("Error sharing:", error));
+              } else {
+                // Fallback: Copy to clipboard
+                navigator.clipboard
+                  .writeText(link)
+                  .then(() => alert("Link copied to clipboard!"))
+                  .catch((error) =>
+                    console.error("Could not copy text to clipboard:", error)
+                  );
+              }
+            }}
+          >
+            Invite via Whatsapp
+          </button>
+          <button
+            className="bg-blue-700 text-white py-2 px-3 rounded-md hover:bg-blue-900"
+            onClick={() => {
+              if (!user) return;
+
+              const link = `${location.origin}/join?friend=${user.username
+                .split(" ")
+                .join("-")
+                .toLowerCase()}`;
+
+              if (navigator.share) {
+                // Use navigator.share if available
+                navigator
+                  .share({
+                    title: `Hi, I'm ${user["username"]}. Use my link.`,
+                    url: link,
+                  })
+                  .then(() => console.log("Share successful!"))
+                  .catch((error) => console.error("Error sharing:", error));
+              } else {
+                // Fallback: Copy to clipboard
+                navigator.clipboard
+                  .writeText(link)
+                  .then(() => alert("Link copied to clipboard!"))
+                  .catch((error) =>
+                    console.error("Could not copy text to clipboard:", error)
+                  );
+              }
+            }}
+          >
+            Share on Facebook
+          </button>
+        </div>
       </div>
 
       <div>
@@ -213,45 +246,43 @@ const FriendsTab = ({ user, friends }: { user: User; friends: Friend[] }) => {
                   {friend.is_claimed ? "Active" : "Pending"}
                 </span>
               </div>
-              {friend.is_claimed && (
-                <div className="text-right">
-                  <p className="text-sm text-gray-400">Generated for you</p>
-                  <p className="font-bold text-blue-400">
-                    {friend.airtime
-                      ? `Claim ₦${friend.airtime} Airtime`
-                      : friend.data
-                      ? `Claim ${convertBundle(friend.data!)} Data`
-                      : `Claim ${friend.tokens} Tokens`}
-                  </p>
-                  <button
-                    className={`mt-2 py-1 px-3 text-sm rounded-md ${
-                      friend.is_claimed
-                        ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                        : "bg-blue-600 text-white hover:bg-blue-700 transition"
-                    }`}
-                    disabled={friend.is_claimed}
-                    onClick={() => claimBonus(friend)}
-                  >
-                    {claimStatus[friend.id] && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width={24}
-                        height={24}
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={3.5}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="animate-spin inline mr-3"
-                      >
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      </svg>
-                    )}
-                    {friend.is_claimed ? "Claimed" : "Claim"}
-                  </button>
-                </div>
-              )}
+              <div className="text-right">
+                <p className="text-sm text-gray-400">Generated for you</p>
+                <p className="font-bold text-blue-400">
+                  {friend.airtime
+                    ? `Claim ₦${friend.airtime} Airtime`
+                    : friend.data
+                    ? `Claim ${convertBundle(friend.data!)} Data`
+                    : `Claim ${friend.tokens} Tokens`}
+                </p>
+                <button
+                  className={`mt-2 py-1 px-3 text-sm rounded-md ${
+                    friend.is_claimed
+                      ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                      : "bg-blue-600 text-white hover:bg-blue-700 transition"
+                  }`}
+                  disabled={friend.is_claimed}
+                  onClick={() => claimBonus(friend)}
+                >
+                  {claimStatus[friend.id] && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width={24}
+                      height={24}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={3.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="animate-spin inline mr-3"
+                    >
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                  )}
+                  {friend.is_claimed ? "Claimed" : "Claim"}
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -279,8 +310,48 @@ const FriendsTab = ({ user, friends }: { user: User; friends: Friend[] }) => {
           </button>
         </div>
       </div>
+
+      {/* Leaderboard */}
+      <Leaderboard friends={friends} />
     </div>
   );
 };
 
 export default FriendsTab;
+
+// ! Temporary hardcoded leaderboard data - will be replaced with real data later
+function Leaderboard({ friends }: { friends: Friend[] }) {
+  const leaderboard = [
+    { name: "Clever Crow", friends: 342 + friends.length },
+    { name: "Bouncy Bobcat", friends: 289 + friends.length },
+    { name: "Friendly Fox", friends: 245 + friends.length },
+    { name: "Happy Hedgehog", friends: 198 + friends.length },
+    { name: "Humble Hornbill", friends: 176 + friends.length },
+    { name: "Swift Swordfish", friends: 154 + friends.length },
+    { name: "Lucky Lark", friends: 132 + friends.length },
+    { name: "Cheerful Cheetah", friends: 115 + friends.length },
+    { name: "Jolly Jaguar", friends: 98 + friends.length },
+    { name: "Gentle Gazelle", friends: 93 + friends.length },
+  ];
+
+  return (
+    <div className="mt-6 bg-gray-900 p-6 rounded-lg shadow-md text-white">
+      <h4 className="font-bold mb-2">Top Friends</h4>
+      <div className="space-y-2">
+        {leaderboard.map((leader, index) => (
+          <div
+            key={index}
+            className="flex justify-between p-2 bg-gray-800 rounded"
+          >
+            <span>
+              #{index + 1} {leader.name}
+            </span>
+            <span className="text-blue-400 font-bold">
+              {leader.friends} friends
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
