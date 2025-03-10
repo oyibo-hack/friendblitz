@@ -1,13 +1,14 @@
 "use client";
 
-// import useLocalStorage from "@/lib/hooks/use-local-storage";
-import { useEffect, useState } from "react";
+import useLocalStorage from "@/lib/hooks/use-local-storage";
+import React, { useEffect, useState } from "react";
 // import { toast } from "sonner";
 
 // import { pushToLocalStorage } from "@/lib/utils";
 
 const PuzzleTab = () => {
   const [recentGames, setRecentGames] = useState<string[]>([]);
+  console.log(recentGames);
 
   useEffect(() => {
     // Retrieve stored values
@@ -38,13 +39,13 @@ const PuzzleTab = () => {
 export default PuzzleTab;
 
 function TicTacToe() {
-  const [board, setBoard] = useState(Array(9).fill(null));
+  const [board, setBoard] = useState<("X" | "O" | null)[]>(Array(9).fill(null));
   const [isXTurn, setIsXTurn] = useState(true);
-  const [winner, setWinner] = useState(null);
+  const [winner, setWinner] = useState<"X" | "O" | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [isDraw, setIsDraw] = useState(false);
 
-  const checkWinner = (newBoard) => {
+  const checkWinner = (newBoard: ("X" | "O" | null)[]): "X" | "O" | null => {
     const winningCombinations = [
       [0, 1, 2],
       [3, 4, 5],
@@ -55,7 +56,7 @@ function TicTacToe() {
       [0, 4, 8],
       [2, 4, 6],
     ];
-    for (let combo of winningCombinations) {
+    for (const combo of winningCombinations) {
       const [a, b, c] = combo;
       if (
         newBoard[a] &&
@@ -74,7 +75,7 @@ function TicTacToe() {
     return null;
   };
 
-  const computerMove = (newBoard) => {
+  const computerMove = (newBoard: ("X" | "O" | null)[]) => {
     const emptyCells = newBoard
       .map((cell, index) => (cell === null ? index : null))
       .filter((i) => i !== null);
@@ -92,7 +93,7 @@ function TicTacToe() {
     setIsXTurn(true);
   };
 
-  const handleClick = (index) => {
+  const handleClick = (index: number) => {
     // Only allow moves if game has started, square is empty, no winner yet, and it's player's turn
     if (!gameStarted || board[index] || winner || !isXTurn) return;
 
@@ -145,7 +146,7 @@ function TicTacToe() {
             className={`w-16 h-16 bg-gray-700 text-white font-bold text-xl flex items-center justify-center border border-gray-500 ${
               gameStarted && !winner && !cell ? "hover:bg-gray-600" : ""
             }`}
-            disabled={!gameStarted || winner}
+            disabled={!gameStarted || Boolean(winner)}
           >
             {cell}
           </button>
@@ -173,10 +174,10 @@ function TicTacToe() {
 const words = ["REACT", "JAVASCRIPT", "HANGMAN", "CODING", "WEBSITE"];
 
 function Hangman() {
-  const [word, setWord] = useState("");
-  const [guessedLetters, setGuessedLetters] = useState([]);
-  const [wrongGuesses, setWrongGuesses] = useState(0);
-  const [gameStarted, setGameStarted] = useState(false);
+  const [word, setWord] = useState<string>("");
+  const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
+  const [wrongGuesses, setWrongGuesses] = useState<number>(0);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
   const maxWrong = 6;
 
   // Initialize a random word when component mounts
@@ -189,7 +190,7 @@ function Hangman() {
     resetGame();
   };
 
-  const handleGuess = (letter) => {
+  const handleGuess = (letter: string) => {
     // Prevent guessing if letter already guessed or game over
     if (guessedLetters.includes(letter) || wrongGuesses >= maxWrong || isWinner)
       return;
@@ -218,7 +219,7 @@ function Hangman() {
   const gameOver = isWinner || isLoser;
 
   // Function to determine button styling based on letter status
-  const getButtonStyle = (letter) => {
+  const getButtonStyle = (letter: string) => {
     if (!gameStarted)
       return "bg-gray-700 text-white opacity-50 cursor-not-allowed";
     if (guessedLetters.includes(letter)) {
@@ -297,12 +298,47 @@ function Tenzi() {
   const [held, setHeld] = useState(Array(10).fill(false));
   const [gameStarted, setGameStarted] = useState(false);
   const [gameWon, setGameWon] = useState(false);
+  const [bestTime, setBestTime] = useState<number>(0);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [now, setNow] = useState<number | null>(null);
+  const [storedBestTime, setStoredBestTime] = useLocalStorage<number>(
+    "time",
+    0
+  );
+
+  useEffect(() => {
+    setBestTime(storedBestTime || 0);
+  }, [storedBestTime]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout | undefined;
+
+    if (gameStarted && !gameWon) {
+      setStartTime(Date.now());
+      timer = setInterval(() => {
+        setNow(Date.now());
+      }, 100);
+    } else if (gameWon) {
+      if (timer) clearInterval(timer);
+    }
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [gameStarted, gameWon]);
+
+  const secondsPassed =
+    startTime != null && now != null
+      ? Number(((now - startTime) / 1000).toFixed(2))
+      : 0;
 
   const rollDice = () => {
     if (gameWon) return;
 
     if (!gameStarted) {
       setGameStarted(true);
+      setStartTime(Date.now());
+      setNow(Date.now());
     }
 
     const newDice = dice.map((value, index) =>
@@ -313,10 +349,14 @@ function Tenzi() {
     // Check if all dice are the same
     if (newDice.every((num) => num === newDice[0])) {
       setGameWon(true);
+      if (secondsPassed < bestTime || bestTime === 0) {
+        setStoredBestTime(Number(secondsPassed));
+        setBestTime(Number(secondsPassed));
+      }
     }
   };
 
-  const holdDie = (index) => {
+  const holdDie = (index: number) => {
     if (gameWon || !gameStarted) return;
 
     const newHeld = [...held];
@@ -329,12 +369,14 @@ function Tenzi() {
     setHeld(Array(10).fill(false));
     setGameWon(false);
     setGameStarted(false);
+    setStartTime(null);
+    setNow(null);
   };
 
-  const renderDice = (value, index) => {
+  const renderDice = (value: number, index: number) => {
     const pip = <div className="w-2 h-2 bg-white rounded-full"></div>;
 
-    const diceFaces = {
+    const diceFaces: Record<number, (React.JSX.Element | null)[][]> = {
       1: [
         [null, null, null],
         [null, pip, null],
@@ -392,6 +434,10 @@ function Tenzi() {
   return (
     <div className="bg-gray-800 rounded-lg p-4 mb-6">
       <h3 className="text-lg font-bold text-white mb-2">Tenzi</h3>
+      <p className="text-white mb-3">
+        <span>{secondsPassed}s</span>
+        <span> | Best Time: {bestTime}s</span>
+      </p>
       {gameWon && (
         <div className="bg-green-500 text-white p-2 rounded-md mb-4 text-center">
           You won! All dice match!
@@ -402,7 +448,7 @@ function Tenzi() {
           <div key={index}>{renderDice(value, index)}</div>
         ))}
       </div>
-      <div className="mt-4 flex gap-2 justify-center">
+      <div className="mt-4 flex gap-2">
         {!gameStarted ? (
           <button
             onClick={rollDice}
