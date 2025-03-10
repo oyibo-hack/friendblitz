@@ -1359,3 +1359,11 @@ export function pushToLocalStorage(key: string, value: any): void {
   // Store back in localStorage
   localStorage.setItem(key, JSON.stringify(data));
 }
+
+export function getFormattedDate(): string {
+  const date: Date = new Date();
+  const day: number = date.getDate();
+  const month: string = date.toLocaleString('en-US', { month: 'long' });
+  
+  return `${day} ${month}`;
+}

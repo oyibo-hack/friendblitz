@@ -257,7 +257,7 @@ export default function Page() {
           </div>
 
           {/* {renderTabContent()} */}
-          <PuzzleTab />
+          <PuzzleTab user={user}/>
         </section>
       </main>
       <Footer />

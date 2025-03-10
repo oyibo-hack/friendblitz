@@ -1,14 +1,14 @@
 "use client";
 
 import useLocalStorage from "@/lib/hooks/use-local-storage";
+import { manageTokenHistory, tokensManager, User } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
-// import { toast } from "sonner";
+import { toast } from "sonner";
 
 // import { pushToLocalStorage } from "@/lib/utils";
 
-const PuzzleTab = () => {
+const PuzzleTab = ({ user }: { user: User }) => {
   const [recentGames, setRecentGames] = useState<string[]>([]);
-  console.log(recentGames);
 
   useEffect(() => {
     // Retrieve stored values
@@ -19,26 +19,98 @@ const PuzzleTab = () => {
       setRecentGames(storedData);
     }
   }, []);
+
+  const [playPuzzleLimit, setPlayPuzzleLimit] = useLocalStorage(
+    "playPuzzleLimit",
+    { count: 0, date: new Date().toDateString() }
+  );
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const today = new Date().toDateString();
+
+      // Ensure playPuzzleLimit has valid structure
+      if (!playPuzzleLimit || typeof playPuzzleLimit.date !== "string") {
+        setPlayPuzzleLimit({ count: 0, date: today });
+      } else if (playPuzzleLimit.date !== today) {
+        setPlayPuzzleLimit({ count: 0, date: today });
+      }
+    }
+  }, [playPuzzleLimit, setPlayPuzzleLimit]);
+
+  async function claimReward() {
+    try {
+      if (playPuzzleLimit.count >= 15) return;
+
+      // Update play puzzle limit without redundant reassignment
+      setPlayPuzzleLimit((prev) => ({ ...prev }));
+
+      // 30% chance to generate tokens
+      if (Math.random() <= 0.7) return;
+
+      // Generate random token amount (0.2 - 1.0)
+      const tokens = +(Math.random() * 0.8 + 0.2).toFixed(2);
+
+      if (!tokens) return;
+
+      // Add tokens to the user's account
+      await tokensManager("add", { userId: user.id, tokens });
+
+      // ✅ Log token history
+      await manageTokenHistory(user.id, "update", {
+        task: `You won ${tokens} tokens!`,
+        date: new Date().toISOString(),
+        tokens,
+      });
+
+      toast.success(`You earned ${tokens} tokens 🎉`);
+    } catch (error) {
+      console.error("An error occurred:", error);
+      throw error; // Ensure errors are caught by the caller
+    }
+  }
+
   return (
     <div className="bg-gray-900 text-white rounded-lg p-6 shadow-md">
       <h3 className="text-xl font-bold mb-4">Play Puzzle</h3>
       <p className="mb-4 text-gray-300">Play the puzzle to earn 10 tokens!</p>
 
-      {/* Tic-Tac-Toe */}
-      <TicTacToe />
+      <TicTacToe claimReward={claimReward} />
+      <Hangman claimReward={claimReward} />
+      <Tenzi claimReward={claimReward} />
 
-      {/* Hangman */}
-      <Hangman />
+      <div>
+        <h4 className="font-bold mb-3">Previous Puzzles</h4>
+        <div className="space-y-2">
+          {recentGames.map((game, index) => {
+            // Split the game string into date/game and status
+            const parts = game.split(" /n ");
+            const [dateGame, status] = parts;
 
-      {/* Tenzi */}
-      <Tenzi />
+            // Determine text color based on completion status
+            const statusColor = status.includes("Completed")
+              ? "text-green-400"
+              : "text-red-400";
+
+            return (
+              <div
+                key={index}
+                className="flex justify-between p-2 bg-gray-800 rounded"
+              >
+                <span className="text-gray-300">{dateGame}</span>
+                <span className={statusColor}>{status}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default PuzzleTab;
 
-function TicTacToe() {
+function TicTacToe({ claimReward }: { claimReward: () => void }) {
   const [board, setBoard] = useState<("X" | "O" | null)[]>(Array(9).fill(null));
   const [isXTurn, setIsXTurn] = useState(true);
   const [winner, setWinner] = useState<"X" | "O" | null>(null);
@@ -63,6 +135,7 @@ function TicTacToe() {
         newBoard[a] === newBoard[b] &&
         newBoard[a] === newBoard[c]
       ) {
+        if (newBoard[a] === "X") claimReward();
         return newBoard[a];
       }
     }
@@ -173,7 +246,7 @@ function TicTacToe() {
 
 const words = ["REACT", "JAVASCRIPT", "HANGMAN", "CODING", "WEBSITE"];
 
-function Hangman() {
+function Hangman({ claimReward }: { claimReward: () => void }) {
   const [word, setWord] = useState<string>("");
   const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
   const [wrongGuesses, setWrongGuesses] = useState<number>(0);
@@ -218,6 +291,12 @@ function Hangman() {
   const isLoser = wrongGuesses >= maxWrong;
   const gameOver = isWinner || isLoser;
 
+  useEffect(() => {
+    if (isWinner) {
+      claimReward();
+    }
+  }, [claimReward, isWinner]);
+
   // Function to determine button styling based on letter status
   const getButtonStyle = (letter: string) => {
     if (!gameStarted)
@@ -234,6 +313,7 @@ function Hangman() {
   return (
     <div className="bg-gray-800 rounded-lg p-4 mb-6">
       <h3 className="text-lg font-bold text-white mb-2">Hangman</h3>
+      <p className="text-white mb-3">Guess the Nigerian State:</p>
       <div className="flex flex-col items-center">
         {gameStarted && (
           <>
@@ -293,7 +373,7 @@ function Hangman() {
   );
 }
 
-function Tenzi() {
+function Tenzi({ claimReward }: { claimReward: () => void }) {
   const [dice, setDice] = useState(Array(10).fill(1));
   const [held, setHeld] = useState(Array(10).fill(false));
   const [gameStarted, setGameStarted] = useState(false);
@@ -363,6 +443,12 @@ function Tenzi() {
     newHeld[index] = !newHeld[index];
     setHeld(newHeld);
   };
+
+  useEffect(() => {
+    if (gameWon) {
+      claimReward();
+    }
+  }, [claimReward, gameWon]);
 
   const resetGame = () => {
     setDice(Array(10).fill(1));
@@ -434,6 +520,11 @@ function Tenzi() {
   return (
     <div className="bg-gray-800 rounded-lg p-4 mb-6">
       <h3 className="text-lg font-bold text-white mb-2">Tenzi</h3>
+      <p className="text-white mb-3">
+        Roll until all dice are the same.
+        <br />
+        Click each die to freeze it at its current value between rolls.
+      </p>
       <p className="text-white mb-3">
         <span>{secondsPassed}s</span>
         <span> | Best Time: {bestTime}s</span>
